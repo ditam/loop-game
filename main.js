@@ -68,12 +68,16 @@ const objects = {
   el02: {
     x: 220,
     y: 310,
-    assetURL: 'assets/test02.png'
+    assetURL: 'assets/test02.png',
+    width: 30,
+    height: 30
   },
   el03: {
     x: 210,
     y: 470,
-    assetURL: 'assets/test03.png'
+    assetURL: 'assets/test03.png',
+    width: 20,
+    height: 20
   },
 }
 
@@ -155,7 +159,15 @@ function draw(timestamp) {
   ctx.fillStyle = 'black';
   for (const [key, obj] of Object.entries(objects)) {
     if (obj.assetURL) {
-      ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, 10, 10);
+      let w, h;
+      if (obj.width && obj.height) {
+        w = obj.width;
+        h = obj.height;
+      } else {
+        w = 10;
+        h = 10;
+      }
+      ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, w, h);
     } else {
       // fallback if no asset: draw a rect (used by debug gridpoints for now)
       ctx.fillRect(obj.x-1.5-VIEWPORT.x, obj.y-1.5-VIEWPORT.y, 3, 3);
