@@ -94,7 +94,7 @@ function draw(timestamp) {
     player.y = Math.max(0, player.y - PLAYER_SPEED);
     playerInViewport.y = player.y - VIEWPORT.y;
     if (playerInViewport.y <= MAP_SCROLL_PADDING) { // TODO: use padding+speed in bounds check?
-      VIEWPORT.y -= PLAYER_SPEED;
+      VIEWPORT.y = Math.max(0, VIEWPORT.y - PLAYER_SPEED);
       playerInViewport.y = player.y - VIEWPORT.y;
     }
   }
@@ -102,15 +102,15 @@ function draw(timestamp) {
     player.x = Math.min(MAP_BOUNDS.x, player.x + PLAYER_SPEED);
     playerInViewport.x = player.x - VIEWPORT.x;
     if (playerInViewport.x >= WIDTH - MAP_SCROLL_PADDING) {
-      VIEWPORT.x += PLAYER_SPEED;
+      VIEWPORT.x = Math.min(MAP_BOUNDS.x - WIDTH, VIEWPORT.x + PLAYER_SPEED);
       playerInViewport.x = player.x - VIEWPORT.x;
     }
   }
   if (keysPressed.down) {
     player.y = Math.min(MAP_BOUNDS.y, player.y + PLAYER_SPEED);
     playerInViewport.y = player.y - VIEWPORT.y;
-    if (playerInViewport.y >= HEIGHT -MAP_SCROLL_PADDING) {
-      VIEWPORT.y += PLAYER_SPEED;
+    if (playerInViewport.y >= HEIGHT- MAP_SCROLL_PADDING) {
+      VIEWPORT.y = Math.min(MAP_BOUNDS.y - HEIGHT, VIEWPORT.y + PLAYER_SPEED);
       playerInViewport.y = player.y - VIEWPORT.y;
     }
   }
@@ -118,7 +118,7 @@ function draw(timestamp) {
     player.x = Math.max(0, player.x - PLAYER_SPEED);
     playerInViewport.x = player.x - VIEWPORT.x;
     if (playerInViewport.x <= MAP_SCROLL_PADDING) {
-      VIEWPORT.x -= PLAYER_SPEED;
+      VIEWPORT.x = Math.max(0, VIEWPORT.x - PLAYER_SPEED);
       playerInViewport.x = player.x - VIEWPORT.x;
     }
   }
