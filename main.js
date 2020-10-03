@@ -15,7 +15,7 @@ function writeMessage(msg) {
   // we write it to the hidden helper, and measure its width
   textSizer.empty();
   textSizer.text(msg);
-  target.css('left', (WIDTH - textSizer.width())/2 + 'px');
+  target.css('left', (WIDTH - textSizer.outerWidth())/2 + 'px');
 
   let i = 0;
 
