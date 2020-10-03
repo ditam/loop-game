@@ -6,3 +6,17 @@ canvas {
   background-color: white;
   border: 1px solid gray;
 }
+
+.text-overlay {
+  position: absolute;
+  top: 350px;
+  /* left position is set for every msg from js */
+  text-align: center;
+
+  font-family: 'Dancing Script', cursive;
+  font-size: 35px;
+}
+
+#text-measure-helper {
+  display: none;
+}

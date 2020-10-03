@@ -1,3 +1,29 @@
+
+// TODO: add param for duration - if missing, do not erase
+function writeMessage(msg) {
+  const target = $('#text-overlay');
+  const textSizer = $('#text-measure-helper');
+
+  const charDelay = 35;
+  target.empty();
+
+  // to align the text to the center,
+  // we write it to the hidden helper, and measure its width
+  textSizer.empty();
+  textSizer.text(msg);
+  target.css('left', (800 - textSizer.width())/2 + 'px');
+
+  let i = 0;
+
+  (function _writeChar() {
+    if (i < msg.length) {
+      target.text(target.text() + msg[i]);
+      i++;
+      setTimeout(_writeChar, charDelay);
+    }
+  })();
+}
+
 $(document).ready(function() {
   console.log('Hello Loop Game!');
 
@@ -17,4 +43,9 @@ $(document).ready(function() {
   ctx.lineTo(325, 450);
   ctx.lineTo(625,  50);
   ctx.stroke();
+
+  writeMessage('Hello and welcome to the looping themed game!');
+
+  setTimeout(function() {writeMessage('A short message.');}, 4000);
+  setTimeout(function() {writeMessage('Yeah.');}, 10000);
 });
