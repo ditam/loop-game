@@ -1,7 +1,17 @@
 
 const WIDTH = 800;
 const HEIGHT = 500;
-const PLAYER_SPEED = 3;
+const PLAYER_SPEED = 5;
+
+const MAP_BOUNDS = {
+  x: 1500,
+  y: 800
+};
+
+const VIEWPORT = {
+  x: 0,
+  y: 0
+};
 
 // TODO: add param for duration - if missing, do not erase
 function writeMessage(msg) {
@@ -44,33 +54,81 @@ const keysPressed = {
   left: false
 };
 
+const objects = {
+
+}
+
+for (let i=0; i<25; i++) {
+  for (let j=0; j<10; j++) {
+    const name = `marker_i${i}_j${j}`;
+    objects[name] = {
+      x: i*100,
+      y: j*100
+    };
+  }
+}
+
 function draw(timestamp) {
   if (!startTime) {
     startTime = timestamp;
     lastDrawTime = timestamp;
   }
 
+  // draw background
   ctx.fillStyle = 'linen';
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
+  const playerInViewport = {
+    x: player.x-VIEWPORT.x,
+    y: player.y-VIEWPORT.y
+  };
+
+  // move player according to current pressed keys
   // TODO: separate drawing and simulation
   if (keysPressed.up) {
     player.y = Math.max(0, player.y - PLAYER_SPEED);
+    playerInViewport.y = player.y - VIEWPORT.y;
+    if (playerInViewport.y <= 100) { // TODO: use 100+speed in bounds check?
+      VIEWPORT.y -= PLAYER_SPEED;
+      playerInViewport.y = player.y - VIEWPORT.y;
+    }
   }
   if (keysPressed.right) {
-    player.x = Math.min(WIDTH, player.x + PLAYER_SPEED);
+    player.x = Math.min(MAP_BOUNDS.x, player.x + PLAYER_SPEED);
+    playerInViewport.x = player.x - VIEWPORT.x;
+    if (playerInViewport.x >= WIDTH-100) {
+      VIEWPORT.x += PLAYER_SPEED;
+      playerInViewport.x = player.x - VIEWPORT.x;
+    }
   }
   if (keysPressed.down) {
-    player.y = Math.min(HEIGHT, player.y + PLAYER_SPEED);
+    player.y = Math.min(MAP_BOUNDS.y, player.y + PLAYER_SPEED);
+    playerInViewport.y = player.y - VIEWPORT.y;
+    if (playerInViewport.y >= HEIGHT-100) {
+      VIEWPORT.y += PLAYER_SPEED;
+      playerInViewport.y = player.y - VIEWPORT.y;
+    }
   }
   if (keysPressed.left) {
     player.x = Math.max(0, player.x - PLAYER_SPEED);
+    playerInViewport.x = player.x - VIEWPORT.x;
+    if (playerInViewport.x <= 100) {
+      VIEWPORT.x -= PLAYER_SPEED;
+      playerInViewport.x = player.x - VIEWPORT.x;
+    }
   }
 
+  // draw player
   ctx.fillStyle = 'green';
   ctx.beginPath();
-  ctx.arc(player.x, player.y, 10, 0, 2 * Math.PI);
+  ctx.arc(playerInViewport.x, playerInViewport.y, 10, 0, 2 * Math.PI);
   ctx.fill();
+
+  // draw gridmarks
+  ctx.fillStyle = 'black';
+  for (const [key, obj] of Object.entries(objects)) {
+    ctx.fillRect(obj.x-2.5-VIEWPORT.x, obj.y-2.5-VIEWPORT.y, 5, 5);
+  }
 
   lastDrawTime = timestamp;
   requestAnimationFrame(draw);
