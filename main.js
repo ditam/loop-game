@@ -60,7 +60,6 @@ const keysPressed = {
 };
 
 const objects = {
-
 }
 
 for (let i=0; i<25; i++) {
@@ -68,7 +67,8 @@ for (let i=0; i<25; i++) {
     const name = `marker_i${i}_j${j}`;
     objects[name] = {
       x: i*100,
-      y: j*100
+      y: j*100,
+      assetURL: `assets/test0${((i+j)%3)+1}.png`
     };
   }
 }
@@ -139,7 +139,9 @@ function draw(timestamp) {
   // draw gridmarks
   ctx.fillStyle = 'black';
   for (const [key, obj] of Object.entries(objects)) {
-    ctx.fillRect(obj.x-2.5-VIEWPORT.x, obj.y-2.5-VIEWPORT.y, 5, 5);
+    // TODO: re-add fallback, current code assumes every object has assetURL
+    // ctx.fillRect(obj.x-2.5-VIEWPORT.x, obj.y-2.5-VIEWPORT.y, 5, 5);
+    ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, 10, 10);
   }
 
   lastDrawTime = timestamp;
@@ -157,6 +159,15 @@ $(document).ready(function() {
 
   const DEBUG_KEYCODE = 68; // -> press d for debug info
   DEBUG_LOG = $('#debug-log');
+
+
+  // generate img elements for objects with assets, and add them as the image key
+  for (const [key, obj] of Object.entries(objects)) {
+    if (obj.assetURL) {
+      const image = $('<img>').attr('src', obj.assetURL);
+      obj.image = image.get(0);
+    }
+  }
 
   document.addEventListener('keydown', event => {
     switch(event.keyCode) {
