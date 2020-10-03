@@ -13,6 +13,8 @@ const VIEWPORT = {
   y: 0
 };
 
+let DEBUG_LOG;
+
 // TODO: add param for duration - if missing, do not erase
 function writeMessage(msg) {
   const target = $('#text-overlay');
@@ -118,6 +120,13 @@ function draw(timestamp) {
     }
   }
 
+  // DEBUG logging
+  if (keysPressed.debug) {
+    DEBUG_LOG.text(`Player at (x${player.x}-y${player.y})`);
+  } else {
+    DEBUG_LOG.empty();
+  }
+
   // draw player
   ctx.fillStyle = 'green';
   ctx.beginPath();
@@ -143,6 +152,9 @@ $(document).ready(function() {
 
   ctx = canvas.getContext('2d');
 
+  const DEBUG_KEYCODE = 68; // -> press d for debug info
+  DEBUG_LOG = $('#debug-log');
+
   document.addEventListener('keydown', event => {
     switch(event.keyCode) {
       case 38:
@@ -156,6 +168,9 @@ $(document).ready(function() {
         break;
       case 37:
         keysPressed.left = true;
+        break;
+      case DEBUG_KEYCODE:
+        keysPressed.debug = true;
         break;
     }
   });
@@ -173,6 +188,9 @@ $(document).ready(function() {
         break;
       case 37:
         keysPressed.left = false;
+        break;
+      case DEBUG_KEYCODE:
+        keysPressed.debug = false;
         break;
     }
   });
