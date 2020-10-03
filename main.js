@@ -162,12 +162,6 @@ function draw(timestamp) {
     DEBUG_LOG.empty();
   }
 
-  // draw player
-  ctx.fillStyle = 'green';
-  ctx.beginPath();
-  ctx.arc(playerInViewport.x, playerInViewport.y, 10, 0, 2 * Math.PI);
-  ctx.fill();
-
   // draw objects
   ctx.fillStyle = 'black';
   for (const [key, obj] of Object.entries(objects)) {
@@ -202,6 +196,12 @@ function draw(timestamp) {
       ctx.fillRect(obj.x-1.5-VIEWPORT.x, obj.y-1.5-VIEWPORT.y, 3, 3);
     }
   }
+
+  // draw player
+  ctx.fillStyle = 'green';
+  ctx.beginPath();
+  ctx.arc(playerInViewport.x, playerInViewport.y, 10, 0, 2 * Math.PI);
+  ctx.fill();
 
   lastDrawTime = timestamp;
   requestAnimationFrame(draw);
