@@ -60,15 +60,30 @@ const keysPressed = {
 };
 
 const objects = {
+  el01: {
+    x: 111,
+    y: 111,
+    assetURL: 'assets/test01.png'
+  },
+  el02: {
+    x: 220,
+    y: 310,
+    assetURL: 'assets/test02.png'
+  },
+  el03: {
+    x: 210,
+    y: 470,
+    assetURL: 'assets/test03.png'
+  },
 }
 
+// generate debug gridmarks
 for (let i=0; i<25; i++) {
   for (let j=0; j<10; j++) {
     const name = `marker_i${i}_j${j}`;
     objects[name] = {
       x: i*100,
-      y: j*100,
-      assetURL: `assets/test0${((i+j)%3)+1}.png`
+      y: j*100
     };
   }
 }
@@ -136,12 +151,15 @@ function draw(timestamp) {
   ctx.arc(playerInViewport.x, playerInViewport.y, 10, 0, 2 * Math.PI);
   ctx.fill();
 
-  // draw gridmarks
+  // draw objects
   ctx.fillStyle = 'black';
   for (const [key, obj] of Object.entries(objects)) {
-    // TODO: re-add fallback, current code assumes every object has assetURL
-    // ctx.fillRect(obj.x-2.5-VIEWPORT.x, obj.y-2.5-VIEWPORT.y, 5, 5);
-    ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, 10, 10);
+    if (obj.assetURL) {
+      ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, 10, 10);
+    } else {
+      // fallback if no asset: draw a rect (used by debug gridpoints for now)
+      ctx.fillRect(obj.x-2.5-VIEWPORT.x, obj.y-2.5-VIEWPORT.y, 5, 5);
+    }
   }
 
   lastDrawTime = timestamp;
