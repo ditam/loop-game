@@ -158,7 +158,7 @@ function draw(timestamp) {
       ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, 10, 10);
     } else {
       // fallback if no asset: draw a rect (used by debug gridpoints for now)
-      ctx.fillRect(obj.x-2.5-VIEWPORT.x, obj.y-2.5-VIEWPORT.y, 5, 5);
+      ctx.fillRect(obj.x-1.5-VIEWPORT.x, obj.y-1.5-VIEWPORT.y, 3, 3);
     }
   }
 
