@@ -8,6 +8,9 @@ const MAP_BOUNDS = {
   y: 800
 };
 
+// The map will scroll if the player is within this distance from the viewport edge
+const MAP_SCROLL_PADDING = 100;
+
 const VIEWPORT = {
   x: 0,
   y: 0
@@ -90,7 +93,7 @@ function draw(timestamp) {
   if (keysPressed.up) {
     player.y = Math.max(0, player.y - PLAYER_SPEED);
     playerInViewport.y = player.y - VIEWPORT.y;
-    if (playerInViewport.y <= 100) { // TODO: use 100+speed in bounds check?
+    if (playerInViewport.y <= MAP_SCROLL_PADDING) { // TODO: use padding+speed in bounds check?
       VIEWPORT.y -= PLAYER_SPEED;
       playerInViewport.y = player.y - VIEWPORT.y;
     }
@@ -98,7 +101,7 @@ function draw(timestamp) {
   if (keysPressed.right) {
     player.x = Math.min(MAP_BOUNDS.x, player.x + PLAYER_SPEED);
     playerInViewport.x = player.x - VIEWPORT.x;
-    if (playerInViewport.x >= WIDTH-100) {
+    if (playerInViewport.x >= WIDTH - MAP_SCROLL_PADDING) {
       VIEWPORT.x += PLAYER_SPEED;
       playerInViewport.x = player.x - VIEWPORT.x;
     }
@@ -106,7 +109,7 @@ function draw(timestamp) {
   if (keysPressed.down) {
     player.y = Math.min(MAP_BOUNDS.y, player.y + PLAYER_SPEED);
     playerInViewport.y = player.y - VIEWPORT.y;
-    if (playerInViewport.y >= HEIGHT-100) {
+    if (playerInViewport.y >= HEIGHT -MAP_SCROLL_PADDING) {
       VIEWPORT.y += PLAYER_SPEED;
       playerInViewport.y = player.y - VIEWPORT.y;
     }
@@ -114,7 +117,7 @@ function draw(timestamp) {
   if (keysPressed.left) {
     player.x = Math.max(0, player.x - PLAYER_SPEED);
     playerInViewport.x = player.x - VIEWPORT.x;
-    if (playerInViewport.x <= 100) {
+    if (playerInViewport.x <= MAP_SCROLL_PADDING) {
       VIEWPORT.x -= PLAYER_SPEED;
       playerInViewport.x = player.x - VIEWPORT.x;
     }
