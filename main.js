@@ -16,6 +16,8 @@ const VIEWPORT = {
   y: 0
 };
 
+const FADE_DURATION = 100;
+
 let DEBUG_LOG;
 
 // TODO: add param for duration - if missing, do not erase
@@ -68,6 +70,7 @@ const objects = {
   el02: {
     x: 220,
     y: 310,
+    isHidden: true,
     assetURL: 'assets/test02.png',
     width: 30,
     height: 30
@@ -90,6 +93,16 @@ for (let i=0; i<25; i++) {
       y: j*100
     };
   }
+}
+
+function fadeInObject(obj) {
+  if (!obj.isHidden) {
+    console.warn('Object is already displayed or fading in:', obj);
+  }
+
+  obj.isHidden = false;
+  obj.isFading = true;
+  obj.fadeCounter = 0;
 }
 
 function draw(timestamp) {
@@ -167,7 +180,23 @@ function draw(timestamp) {
         w = 10;
         h = 10;
       }
-      ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, w, h);
+
+      // if the object is fading in, apply an alpha to the drawing context:
+      if (obj.isFading) {
+        ctx.globalAlpha = obj.fadeCounter / FADE_DURATION;
+        obj.fadeCounter++;
+        if (obj.fadeCounter >= FADE_DURATION) {
+          obj.isFading = false;
+          delete obj.fadeCounter;
+        }
+      }
+
+      if (!obj.isHidden) {
+        ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, w, h);
+      }
+
+      // reset any alpha values
+      ctx.globalAlpha = 1;
     } else {
       // fallback if no asset: draw a rect (used by debug gridpoints for now)
       ctx.fillRect(obj.x-1.5-VIEWPORT.x, obj.y-1.5-VIEWPORT.y, 3, 3);
@@ -243,6 +272,8 @@ $(document).ready(function() {
 
   setTimeout(function() {writeMessage('A short message.');}, 4000);
   setTimeout(function() {writeMessage('Yeah.');}, 10000);
+
+  setTimeout(function() {fadeInObject(objects.el02)}, 3000);
 
   requestAnimationFrame(draw);
 });
