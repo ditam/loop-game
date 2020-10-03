@@ -13,6 +13,9 @@ canvas {
   /* left position is set for every msg from js */
   text-align: center;
 
+  padding: 14px;
+  background-color: rgba(255, 255, 255, 0.2);
+
   font-family: 'Dancing Script', cursive;
   font-size: 35px;
 }

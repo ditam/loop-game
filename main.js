@@ -1,4 +1,7 @@
 
+const WIDTH = 800;
+const HEIGHT = 500;
+
 // TODO: add param for duration - if missing, do not erase
 function writeMessage(msg) {
   const target = $('#text-overlay');
@@ -11,7 +14,7 @@ function writeMessage(msg) {
   // we write it to the hidden helper, and measure its width
   textSizer.empty();
   textSizer.text(msg);
-  target.css('left', (800 - textSizer.width())/2 + 'px');
+  target.css('left', (WIDTH - textSizer.width())/2 + 'px');
 
   let i = 0;
 
@@ -27,14 +30,14 @@ function writeMessage(msg) {
 $(document).ready(function() {
   console.log('Hello Loop Game!');
 
-  const WIDTH = 800;
-  const HEIGHT = 500;
-
   const canvas = document.getElementById('main-canvas');
   $(canvas).attr('height', HEIGHT);
   $(canvas).attr('width', WIDTH);
 
   const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = 'linen';
+  ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
   ctx.strokeStyle = 'green';
   ctx.lineWidth = 5;
