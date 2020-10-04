@@ -84,6 +84,15 @@ const objects = {
   },
 }
 
+function createImageRefFromObjAsset(obj) {
+  if (obj.assetURL) {
+    const image = $('<img>').attr('src', obj.assetURL);
+    obj.image = image.get(0);
+  } else {
+    console.error('Object has no asset URL:', obj);
+  }
+}
+
 // generate debug gridmarks
 for (let i=0; i<25; i++) {
   for (let j=0; j<10; j++) {
@@ -101,10 +110,28 @@ function fadeInObject(obj) {
   }
 
   obj.isHidden = false;
-  obj.isFading = true;
+  obj.isFadingIn = true;
   obj.fadeCounter = 0;
 }
 
+function addFootstep(x, y) {
+  console.log('adding footstep at', x, y);
+  let name = 'footstep'; // should not matter, just for uniqueness
+  while (name in objects) {
+    name += 'a';
+  }
+  objects[name] = {
+    x: x,
+    y: y,
+    isFadingOut: true,
+    fadeCounter: 0,
+    assetURL: 'assets/footprint.png'
+    // TODO: add support for rotation
+  };
+  createImageRefFromObjAsset(objects[name]);
+}
+
+let drawCount = 0;
 function draw(timestamp) {
   if (!startTime) {
     startTime = timestamp;
@@ -120,6 +147,8 @@ function draw(timestamp) {
     y: player.y-VIEWPORT.y
   };
 
+  let hasMoved = false;
+
   // move player according to current pressed keys
   // TODO: separate drawing and simulation
   if (keysPressed.up) {
@@ -129,6 +158,7 @@ function draw(timestamp) {
       VIEWPORT.y = Math.max(0, VIEWPORT.y - PLAYER_SPEED);
       playerInViewport.y = player.y - VIEWPORT.y;
     }
+    hasMoved = true;
   }
   if (keysPressed.right) {
     player.x = Math.min(MAP_BOUNDS.x, player.x + PLAYER_SPEED);
@@ -137,6 +167,7 @@ function draw(timestamp) {
       VIEWPORT.x = Math.min(MAP_BOUNDS.x - WIDTH, VIEWPORT.x + PLAYER_SPEED);
       playerInViewport.x = player.x - VIEWPORT.x;
     }
+    hasMoved = true;
   }
   if (keysPressed.down) {
     player.y = Math.min(MAP_BOUNDS.y, player.y + PLAYER_SPEED);
@@ -145,6 +176,7 @@ function draw(timestamp) {
       VIEWPORT.y = Math.min(MAP_BOUNDS.y - HEIGHT, VIEWPORT.y + PLAYER_SPEED);
       playerInViewport.y = player.y - VIEWPORT.y;
     }
+    hasMoved = true;
   }
   if (keysPressed.left) {
     player.x = Math.max(0, player.x - PLAYER_SPEED);
@@ -153,6 +185,12 @@ function draw(timestamp) {
       VIEWPORT.x = Math.max(0, VIEWPORT.x - PLAYER_SPEED);
       playerInViewport.x = player.x - VIEWPORT.x;
     }
+    hasMoved = true;
+  }
+
+  // add footstep every once in a while
+  if (hasMoved && !(drawCount%10)) {
+    addFootstep(player.x, player.y);
   }
 
   // DEBUG logging
@@ -176,11 +214,11 @@ function draw(timestamp) {
       }
 
       // if the object is fading in, apply an alpha to the drawing context:
-      if (obj.isFading) {
+      if (obj.isFadingIn) {
         ctx.globalAlpha = obj.fadeCounter / FADE_DURATION;
         obj.fadeCounter++;
         if (obj.fadeCounter >= FADE_DURATION) {
-          obj.isFading = false;
+          obj.isFadingIn = false;
           delete obj.fadeCounter;
         }
       }
@@ -189,7 +227,7 @@ function draw(timestamp) {
         ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, w, h);
       }
 
-      // reset any alpha values
+      // reset any alpha values // FIXME: use ctx save and restore instead
       ctx.globalAlpha = 1;
     } else {
       // fallback if no asset: draw a rect (used by debug gridpoints for now)
@@ -204,6 +242,7 @@ function draw(timestamp) {
   ctx.fill();
 
   lastDrawTime = timestamp;
+  drawCount++;
   requestAnimationFrame(draw);
 }
 
@@ -223,8 +262,7 @@ $(document).ready(function() {
   // generate img elements for objects with assets, and add them as the image key
   for (const [key, obj] of Object.entries(objects)) {
     if (obj.assetURL) {
-      const image = $('<img>').attr('src', obj.assetURL);
-      obj.image = image.get(0);
+      createImageRefFromObjAsset(obj);
     }
   }
 
