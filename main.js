@@ -2,7 +2,7 @@
 /* Constant params */
 const WIDTH = 800;
 const HEIGHT = 500;
-const PLAYER_SPEED = 5;
+const PLAYER_SPEED = 3;
 
 const MAP_BOUNDS = {
   x: 1500,
@@ -210,13 +210,28 @@ function addFootstep(x, y, angle) {
   lastStepWasLeftFooted = !lastStepWasLeftFooted;
 }
 
+function isObjectInProximity(playerCoords, objectCoords) {
+  const xDist = Math.abs(playerCoords.x - objectCoords.x);
+  const yDist = Math.abs(playerCoords.y - objectCoords.y);
+
+  const distSquared = xDist*xDist + yDist*yDist;
+  return distSquared < 40*40;
+}
+
 function checkCoordsForCurrentTask(coords) {
-  // TODO add check
+  const taskState = {
+    completed: false,
+    failed: false
+  };
+
   const bounds = game.state.currentTask.acceptableBounds;
   if (coords.x < bounds.x0 || coords.y < bounds.y0 || coords.x > bounds.x1 || coords.y > bounds.y1) {
-    return false;
+    taskState.failed = true;
   }
-  return true;
+
+  taskState.completed = isObjectInProximity(coords, game.state.currentTask.target);
+
+  return taskState;
 }
 
 function startTask() {
@@ -364,9 +379,13 @@ function draw(timestamp) {
 
   // check if movement satisfies current task
   if (game.state.currentTask) {
-    if (!checkCoordsForCurrentTask({x: player.x, y: player.y})) {
-      console.log('---TASK failed!');
+    const taskState = checkCoordsForCurrentTask({x: player.x, y: player.y});
+    if (taskState.failed) {
       resetGame();
+    } else if (taskState.completed) {
+      console.log('task completed!');
+      game.state.currentTask = {};
+      writeDelayedMessage('And he just stood there for a while.', 300);
     }
   }
 
