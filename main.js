@@ -33,6 +33,9 @@ const game = {
       x: 0,
       y: 0
     }
+  },
+  meta: {
+    resets: 0
   }
 };
 
@@ -259,6 +262,7 @@ function startTask() {
 }
 
 function resetInitialState() {
+  game.meta.resets++;
   game.state = clone(game._initialState);
   // clone does not carry the HTMLImageElements, so we re-add them
   // TODO: there should be a more efficient way of doing this - update clone?
@@ -274,7 +278,12 @@ function resetGame() {
   game.state.resetting = true;
   canvasCover.fadeTo(1000, 1, () => $('.text-overlay').empty().addClass('resetting'));
   writeDelayedMessage('You\'re not listening...', 2000);
-  writeDelayedMessage('I\'m telling you a story.', 6000);
+  let restartDelay = 10*1000;
+  if (game.meta.resets <= 1) {
+    writeDelayedMessage('I\'m telling you a story.', 6000);
+  } else {
+    restartDelay = 6000;
+  }
 
   // schedule actual reset
   setTimeout(
@@ -289,7 +298,7 @@ function resetGame() {
       game.state.resetting = false;
       resetInitialState();
     },
-    10*1000
+    restartDelay
   );
 }
 
