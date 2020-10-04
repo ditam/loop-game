@@ -16,7 +16,8 @@ const VIEWPORT = {
   y: 0
 };
 
-const FADE_DURATION = 100;
+const FADE_IN_DURATION = 100;
+const FADE_OUT_DURATION = 150;
 
 let DEBUG_LOG;
 
@@ -126,9 +127,9 @@ function addFootstep(x, y) {
     isFadingOut: true,
     fadeCounter: 0,
     assetURL: 'assets/footprint.png',
-    width: 12,
-    height: 12,
-    offsetX: lastStepWasLeftFooted? 12 : 0
+    width: 15,
+    height: 15,
+    offsetX: lastStepWasLeftFooted? 6 : -6
     // TODO: add support for rotation
   };
   createImageRefFromObjAsset(objects[name]);
@@ -217,13 +218,29 @@ function draw(timestamp) {
         h = 10;
       }
 
-      // if the object is fading in, apply an alpha to the drawing context:
+      // if the object is fading, apply an alpha to the drawing context
       if (obj.isFadingIn) {
-        ctx.globalAlpha = obj.fadeCounter / FADE_DURATION;
+        ctx.globalAlpha = obj.fadeCounter / FADE_IN_DURATION;
         obj.fadeCounter++;
-        if (obj.fadeCounter >= FADE_DURATION) {
+        if (obj.fadeCounter >= FADE_IN_DURATION) {
           obj.isFadingIn = false;
           delete obj.fadeCounter;
+        }
+      } else if (obj.isFadingOut) {
+        // objects don't start fading out until hitting this delay
+        const fadeOutDelay = 20;
+        obj.fadeCounter++;
+        if (obj.fadeCounter > fadeOutDelay) {
+          let newAlpha = 1 - (obj.fadeCounter - fadeOutDelay) / FADE_OUT_DURATION;
+          // with the delay, we might get out of semantic range - easiest to just clip
+          ctx.globalAlpha = Math.max(0, Math.min(1, newAlpha));
+
+          if ((obj.fadeCounter - fadeOutDelay) >= FADE_OUT_DURATION) {
+            obj.isFadingOut = false;
+            delete obj.fadeCounter;
+            // TODO: remove object entirely instead (prob after moving to objects array)
+            obj.isHidden = true;
+          }
         }
       }
 
