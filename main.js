@@ -32,6 +32,7 @@ const el01 = {
   assetURL: 'assets/test01.png'
 };
 const el02 = {
+  id: 'red-x',
   x: 200,
   y: 300,
   isHidden: true,
@@ -81,6 +82,7 @@ sortObjects();
 
 // save initial state (will reset to this)
 game._initialState = clone(game.state);
+console.log('saved initial state:', game._initialState);
 
 function createImageRefFromObjAsset(obj) {
   if (obj.assetURL) {
@@ -430,8 +432,9 @@ function startDay() {
     5000
   );
 
-  // TODO: reference via game.state.objects?
-  setTimeout(function() {game.utils.fadeInObject(el02)}, 3000);
+  // TODO: remove, demo only
+  const redX = game.utils.findObjectByID('red-x', game.state.objects);
+  setTimeout(function() {game.utils.fadeInObject(redX)}, 3000);
 }
 
 $(document).ready(function() {

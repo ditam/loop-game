@@ -23,5 +23,9 @@ game.utils = {
 
     const distSquared = xDist*xDist + yDist*yDist;
     return distSquared < ACTIVITY_RADIUS*ACTIVITY_RADIUS;
+  },
+
+  findObjectByID: function(id, objects) {
+    return objects.filter(o => o.id === id)[0];
   }
 };
