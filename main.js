@@ -21,6 +21,13 @@ const FADE_OUT_DURATION = 150;
 
 let DEBUG_LOG;
 
+function avg(array) {
+  if (!array.length) return 0;
+  let sum = 0;
+  array.forEach(x => sum+=x);
+  return sum/array.length;
+}
+
 // TODO: add param for duration - if missing, do not erase
 function writeMessage(msg) {
   const target = $('#text-overlay');
@@ -131,7 +138,6 @@ function addFootstep(x, y, angle) {
     width: 15,
     height: 15,
     offsetX: lastStepWasLeftFooted? 6 : -6
-    // TODO: add support for rotation
   };
   createImageRefFromObjAsset(objects[name]);
   lastStepWasLeftFooted = !lastStepWasLeftFooted;
@@ -154,7 +160,7 @@ function draw(timestamp) {
   };
 
   let hasMoved = false;
-  let movementAngle;
+  const movementAngles = [];
 
   // move player according to current pressed keys
   // TODO: separate drawing and simulation
@@ -166,7 +172,7 @@ function draw(timestamp) {
       playerInViewport.y = player.y - VIEWPORT.y;
     }
     hasMoved = true;
-    movementAngle = 0;
+    movementAngles.push(0);
   }
   if (keysPressed.right) {
     player.x = Math.min(MAP_BOUNDS.x, player.x + PLAYER_SPEED);
@@ -176,7 +182,7 @@ function draw(timestamp) {
       playerInViewport.x = player.x - VIEWPORT.x;
     }
     hasMoved = true;
-    movementAngle = 90 * Math.PI / 180;
+    movementAngles.push(90 * Math.PI / 180);
   }
   if (keysPressed.down) {
     player.y = Math.min(MAP_BOUNDS.y, player.y + PLAYER_SPEED);
@@ -186,7 +192,7 @@ function draw(timestamp) {
       playerInViewport.y = player.y - VIEWPORT.y;
     }
     hasMoved = true;
-    movementAngle = 180 * Math.PI / 180;
+    movementAngles.push(180 * Math.PI / 180);
   }
   if (keysPressed.left) {
     player.x = Math.max(0, player.x - PLAYER_SPEED);
@@ -196,12 +202,12 @@ function draw(timestamp) {
       playerInViewport.x = player.x - VIEWPORT.x;
     }
     hasMoved = true;
-    movementAngle = 270 * Math.PI / 180;
+    movementAngles.push(270 * Math.PI / 180);
   }
 
   // add footstep every once in a while
   if (hasMoved && !(drawCount%5)) {
-    addFootstep(player.x, player.y, movementAngle);
+    addFootstep(player.x, player.y, avg(movementAngles));
   }
 
   // DEBUG logging
@@ -236,7 +242,7 @@ function draw(timestamp) {
         }
       } else if (obj.isFadingOut) {
         // objects don't start fading out until hitting this delay
-        const fadeOutDelay = 30;
+        const fadeOutDelay = 15;
         obj.fadeCounter++;
         if (obj.fadeCounter > fadeOutDelay) {
           let newAlpha = 1 - (obj.fadeCounter - fadeOutDelay) / FADE_OUT_DURATION;
