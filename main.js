@@ -68,8 +68,8 @@ const objects = {
     assetURL: 'assets/test01.png'
   },
   el02: {
-    x: 220,
-    y: 310,
+    x: 200,
+    y: 300,
     isHidden: true,
     assetURL: 'assets/test02.png',
     width: 30,
@@ -231,8 +231,7 @@ function draw(timestamp) {
         let dX = dY = 0;
         if (obj.offsetX) dX = obj.offsetX;
         if (obj.offsetY) dY = obj.offsetY;
-        // FIXME: replace static 5 with obj size/2 to center
-        ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x + dX, obj.y-5-VIEWPORT.y + dY, w, h);
+        ctx.drawImage(obj.image, obj.x-w/2-VIEWPORT.x + dX, obj.y-h/2-VIEWPORT.y + dY, w, h);
       }
 
       // reset any alpha values // FIXME: use ctx save and restore instead
