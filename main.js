@@ -1,4 +1,5 @@
 
+/* Constant params */
 const WIDTH = 800;
 const HEIGHT = 500;
 const PLAYER_SPEED = 5;
@@ -11,13 +12,71 @@ const MAP_BOUNDS = {
 // The map will scroll if the player is within this distance from the viewport edge
 const MAP_SCROLL_PADDING = 100;
 
-const VIEWPORT = {
-  x: 0,
-  y: 0
-};
-
 const FADE_IN_DURATION = 100;
 const FADE_OUT_DURATION = 150;
+
+function clone(o) {
+  return JSON.parse(JSON.stringify(o));
+}
+
+/* State params */
+const game = {
+  state: {
+    currentTask: null,
+    objects: {},
+    player: {
+      x: 650,
+      y: 110
+    },
+    resetting: false,
+    viewport: {
+      x: 0,
+      y: 0
+    }
+  }
+};
+
+// add debug placeholder objects
+const el01 = {
+  x: 111,
+  y: 111,
+  assetURL: 'assets/test01.png'
+};
+const el02 = {
+  x: 200,
+  y: 300,
+  isHidden: true,
+  assetURL: 'assets/test02.png',
+  width: 30,
+  height: 30
+};
+const el03 = {
+  x: 210,
+  y: 470,
+  assetURL: 'assets/test03.png',
+  width: 20,
+  height: 20
+};
+createImageRefFromObjAsset(el01);
+createImageRefFromObjAsset(el02);
+createImageRefFromObjAsset(el03);
+game.state.objects.el01 = el01;
+game.state.objects.el02 = el02;
+game.state.objects.el03 = el03;
+
+// generate debug gridmarks
+for (let i=0; i<25; i++) {
+  for (let j=0; j<10; j++) {
+    const name = `marker_i${i}_j${j}`;
+    game.state.objects[name] = {
+      x: i*100,
+      y: j*100
+    };
+  }
+}
+
+// save initial state (will reset to this)
+game._initialState = clone(game.state);
 
 let DEBUG_LOG;
 
@@ -53,15 +112,21 @@ function writeMessage(msg) {
   })();
 }
 
+function writeDelayedMessage(msg, delay) {
+  // TODO: guard against scheduling on top of existing. Shared timeout vars?
+  setTimeout(
+    () => writeMessage(msg),
+    delay
+  );
+}
+
+/* rendering and simulation globals */
 let ctx; // canvas 2d context
 let startTime;
 let lastDrawTime;
+let canvasCover;
 
-const player = {
-  x: 300,
-  y: 300
-};
-
+/* user interaction state */
 const keysPressed = {
   up: false,
   right: false,
@@ -69,46 +134,12 @@ const keysPressed = {
   left: false
 };
 
-const objects = {
-  el01: {
-    x: 111,
-    y: 111,
-    assetURL: 'assets/test01.png'
-  },
-  el02: {
-    x: 200,
-    y: 300,
-    isHidden: true,
-    assetURL: 'assets/test02.png',
-    width: 30,
-    height: 30
-  },
-  el03: {
-    x: 210,
-    y: 470,
-    assetURL: 'assets/test03.png',
-    width: 20,
-    height: 20
-  },
-}
-
 function createImageRefFromObjAsset(obj) {
   if (obj.assetURL) {
     const image = $('<img>').attr('src', obj.assetURL);
     obj.image = image.get(0);
   } else {
     console.error('Object has no asset URL:', obj);
-  }
-}
-
-// generate debug gridmarks
-for (let i=0; i<25; i++) {
-  for (let j=0; j<10; j++) {
-    const name = `marker_i${i}_j${j}`;
-    objects[name] = {
-      x: i*100,
-      y: j*100
-    };
   }
 }
 
@@ -125,7 +156,7 @@ function fadeInObject(obj) {
 let lastStepWasLeftFooted = false;
 function addFootstep(x, y, angle) {
   let name = 'footstep'; // should not matter, just for uniqueness
-  while (name in objects) {
+  while (name in game.state.objects) {
     name += 'a';
   }
 
@@ -174,13 +205,88 @@ function addFootstep(x, y, angle) {
   }
 
   createImageRefFromObjAsset(footstepObj);
-  objects[name] = footstepObj;
+  game.state.objects[name] = footstepObj;
 
   lastStepWasLeftFooted = !lastStepWasLeftFooted;
 }
 
+function checkCoordsForCurrentTask(coords) {
+  // TODO add check
+  const bounds = game.state.currentTask.acceptableBounds;
+  if (coords.x < bounds.x0 || coords.y < bounds.y0 || coords.x > bounds.x1 || coords.y > bounds.y1) {
+    return false;
+  }
+  return true;
+}
+
+function startTask() {
+  // TODO: move target to params
+  game.state.currentTask = {
+    target: {
+      x: 200,
+      y: 300
+    },
+    startPosition: {
+      x: game.state.player.x,
+      y: game.state.player.y
+    }
+  };
+  const currentTask = game.state.currentTask;
+  currentTask.acceptableBounds = {
+    x0: Math.min(currentTask.target.x, currentTask.startPosition.x) - 50,
+    y0: Math.min(currentTask.target.y, currentTask.startPosition.y) - 50,
+    x1: Math.max(currentTask.target.x, currentTask.startPosition.x) + 50,
+    y1: Math.max(currentTask.target.y, currentTask.startPosition.y) + 50
+  }
+  // TODO: save times - will allow waiting tasks and speed-based checks
+
+  console.log('started task:', currentTask);
+}
+
+function resetInitialState() {
+  game.state = clone(game._initialState);
+  // clone does not carry the HTMLImageElements, so we re-add them
+  // TODO: there should be a more efficient way of doing this - update clone?
+  for (const [key, obj] of Object.entries(game.state.objects)) {
+    if (obj.assetURL) {
+      createImageRefFromObjAsset(obj);
+    }
+  }
+}
+
+function resetGame() {
+  // show reset-loop message
+  game.state.resetting = true;
+  canvasCover.fadeTo(1000, 1, () => $('.text-overlay').empty().addClass('resetting'));
+  writeDelayedMessage('You\'re not listening...', 2000);
+  writeDelayedMessage('I\'m telling you a story.', 6000);
+
+  // schedule actual reset
+  setTimeout(
+    function() {
+      // it needs to be empty, but keeping the resetting class while fading, so no padding appears
+      $('.text-overlay').empty();
+      canvasCover.fadeTo(1000, 0, function() {
+        // after the fade is complete, remove the class which switches back to the original style
+        $('.text-overlay').removeClass('resetting')
+        startDay(); // -> this can now safely display new msgs
+      });
+      game.state.resetting = false;
+      resetInitialState();
+    },
+    10*1000
+  );
+}
+
 let drawCount = 0;
 function draw(timestamp) {
+  // during resets drawing is paused
+  if (game.state.resetting) {
+    drawCount = 0;
+    requestAnimationFrame(draw);
+    return;
+  };
+
   if (!startTime) {
     startTime = timestamp;
     lastDrawTime = timestamp;
@@ -190,9 +296,13 @@ function draw(timestamp) {
   ctx.fillStyle = 'linen';
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
+  // shorthands
+  const player = game.state.player;
+  const viewport = game.state.viewport;
+
   const playerInViewport = {
-    x: player.x-VIEWPORT.x,
-    y: player.y-VIEWPORT.y
+    x: player.x-viewport.x,
+    y: player.y-viewport.y
   };
 
   let hasMoved = false;
@@ -202,40 +312,40 @@ function draw(timestamp) {
   // TODO: separate drawing and simulation
   if (keysPressed.up) {
     player.y = Math.max(0, player.y - PLAYER_SPEED);
-    playerInViewport.y = player.y - VIEWPORT.y;
+    playerInViewport.y = player.y - viewport.y;
     if (playerInViewport.y <= MAP_SCROLL_PADDING) { // TODO: use padding+speed in bounds check?
-      VIEWPORT.y = Math.max(0, VIEWPORT.y - PLAYER_SPEED);
-      playerInViewport.y = player.y - VIEWPORT.y;
+      viewport.y = Math.max(0, viewport.y - PLAYER_SPEED);
+      playerInViewport.y = player.y - viewport.y;
     }
     hasMoved = true;
     movementAngles.push(0);
   }
   if (keysPressed.right) {
     player.x = Math.min(MAP_BOUNDS.x, player.x + PLAYER_SPEED);
-    playerInViewport.x = player.x - VIEWPORT.x;
+    playerInViewport.x = player.x - viewport.x;
     if (playerInViewport.x >= WIDTH - MAP_SCROLL_PADDING) {
-      VIEWPORT.x = Math.min(MAP_BOUNDS.x - WIDTH, VIEWPORT.x + PLAYER_SPEED);
-      playerInViewport.x = player.x - VIEWPORT.x;
+      viewport.x = Math.min(MAP_BOUNDS.x - WIDTH, viewport.x + PLAYER_SPEED);
+      playerInViewport.x = player.x - viewport.x;
     }
     hasMoved = true;
     movementAngles.push(90 * Math.PI / 180);
   }
   if (keysPressed.down) {
     player.y = Math.min(MAP_BOUNDS.y, player.y + PLAYER_SPEED);
-    playerInViewport.y = player.y - VIEWPORT.y;
+    playerInViewport.y = player.y - viewport.y;
     if (playerInViewport.y >= HEIGHT- MAP_SCROLL_PADDING) {
-      VIEWPORT.y = Math.min(MAP_BOUNDS.y - HEIGHT, VIEWPORT.y + PLAYER_SPEED);
-      playerInViewport.y = player.y - VIEWPORT.y;
+      viewport.y = Math.min(MAP_BOUNDS.y - HEIGHT, viewport.y + PLAYER_SPEED);
+      playerInViewport.y = player.y - viewport.y;
     }
     hasMoved = true;
     movementAngles.push(180 * Math.PI / 180);
   }
   if (keysPressed.left) {
     player.x = Math.max(0, player.x - PLAYER_SPEED);
-    playerInViewport.x = player.x - VIEWPORT.x;
+    playerInViewport.x = player.x - viewport.x;
     if (playerInViewport.x <= MAP_SCROLL_PADDING) {
-      VIEWPORT.x = Math.max(0, VIEWPORT.x - PLAYER_SPEED);
-      playerInViewport.x = player.x - VIEWPORT.x;
+      viewport.x = Math.max(0, viewport.x - PLAYER_SPEED);
+      playerInViewport.x = player.x - viewport.x;
     }
     hasMoved = true;
     movementAngles.push(270 * Math.PI / 180);
@@ -252,6 +362,14 @@ function draw(timestamp) {
     addFootstep(player.x, player.y, angle);
   }
 
+  // check if movement satisfies current task
+  if (game.state.currentTask) {
+    if (!checkCoordsForCurrentTask({x: player.x, y: player.y})) {
+      console.log('---TASK failed!');
+      resetGame();
+    }
+  }
+
   // DEBUG logging
   if (keysPressed.debug) {
     DEBUG_LOG.text(`Player at (x${player.x}-y${player.y})`);
@@ -261,7 +379,7 @@ function draw(timestamp) {
 
   // draw objects
   ctx.fillStyle = 'black';
-  for (const [key, obj] of Object.entries(objects)) {
+  for (const [key, obj] of Object.entries(game.state.objects)) {
     if (obj.assetURL) {
       ctx.save();
 
@@ -304,8 +422,8 @@ function draw(timestamp) {
         let dX = dY = 0;
         if (obj.offsetX) dX = obj.offsetX;
         if (obj.offsetY) dY = obj.offsetY;
-        const computedX = obj.x - w/2 - VIEWPORT.x + dX;
-        const computedY = obj.y - h/2 - VIEWPORT.y + dY;
+        const computedX = obj.x - w/2 - viewport.x + dX;
+        const computedY = obj.y - h/2 - viewport.y + dY;
         ctx.translate(computedX, computedY);
         ctx.rotate(obj.angle || 0);
         ctx.drawImage(obj.image, 0, 0, w, h);
@@ -315,7 +433,7 @@ function draw(timestamp) {
       ctx.restore();
     } else {
       // fallback if no asset: draw a rect (used by debug gridpoints for now)
-      ctx.fillRect(obj.x-1.5-VIEWPORT.x, obj.y-1.5-VIEWPORT.y, 3, 3);
+      ctx.fillRect(obj.x-1.5-viewport.x, obj.y-1.5-viewport.y, 3, 3);
     }
   }
 
@@ -330,25 +448,37 @@ function draw(timestamp) {
   requestAnimationFrame(draw);
 }
 
+function startDay() {
+  writeDelayedMessage('It was a day just like any other.', 1000);
+
+  setTimeout(
+    function() {
+      writeMessage('He went straight to the X.');
+      // TODO: only start task after msg is fully shown
+      startTask();
+    },
+    5000
+  );
+
+  setTimeout(function() {fadeInObject(game.state.objects.el02)}, 3000);
+}
+
 $(document).ready(function() {
   console.log('Hello Loop Game!');
 
   const canvas = document.getElementById('main-canvas');
   $(canvas).attr('height', HEIGHT);
   $(canvas).attr('width', WIDTH);
-
   ctx = canvas.getContext('2d');
 
-  const DEBUG_KEYCODE = 68; // -> press d for debug info
+  // TODO: set initial sizes from CSS to prevent jumping
+  canvasCover = $('#canvas-cover');
+  canvasCover.css('height', HEIGHT);
+  canvasCover.css('width', WIDTH);
+  canvasCover.fadeTo(600, 0);
+
+  const DEBUG_KEYCODE = 68; // -> press and hold d for debug info
   DEBUG_LOG = $('#debug-log');
-
-
-  // generate img elements for objects with assets, and add them as the image key
-  for (const [key, obj] of Object.entries(objects)) {
-    if (obj.assetURL) {
-      createImageRefFromObjAsset(obj);
-    }
-  }
 
   document.addEventListener('keydown', event => {
     switch(event.keyCode) {
@@ -390,12 +520,7 @@ $(document).ready(function() {
     }
   });
 
-  writeMessage('Hello and welcome to the looping themed game!');
-
-  setTimeout(function() {writeMessage('A short message.');}, 4000);
-  setTimeout(function() {writeMessage('Yeah.');}, 10000);
-
-  setTimeout(function() {fadeInObject(objects.el02)}, 3000);
+  startDay();
 
   requestAnimationFrame(draw);
 });

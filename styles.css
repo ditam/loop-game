@@ -4,10 +4,16 @@ body {
 
 canvas {
   background-color: white;
-  border: 1px solid gray;
+}
+
+#canvas-cover {
+  position: absolute;
+  background-color: black;
+  /* opacity controlled from js */
 }
 
 .text-overlay {
+  user-select: none;
   position: absolute;
   top: 350px;
   /* left position is set for every msg from js */
@@ -18,6 +24,12 @@ canvas {
 
   font-family: 'Dancing Script', cursive;
   font-size: 35px;
+}
+
+.text-overlay.resetting {
+  color: white;
+  background-color: black;
+  padding: 0;
 }
 
 #text-measure-helper {
