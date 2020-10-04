@@ -45,6 +45,38 @@
 
         return taskState;
       }
-    }
+    },
+    {
+      id: 'stay-here',
+      startMessage: 'And he just stood there for a while.',
+      endMessage: 'Completed',
+      setData: function(player, time) {
+        currentTask = {
+          startPosition: {
+            x: player.x,
+            y: player.y
+          },
+          startTime: time
+        };
+      },
+      checker: function(playerCoords, time) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        const bounds = currentTask.acceptableBounds;
+        if (
+          playerCoords.x !== currentTask.startPosition.x ||
+          playerCoords.y !== currentTask.startPosition.y
+        ) {
+          taskState.failed = true;
+        }
+
+        taskState.completed = time - currentTask.startTime > 5000;
+
+        return taskState;
+      }
+    },
   ];
 })();

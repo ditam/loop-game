@@ -196,15 +196,20 @@ function addFootstep(x, y, angle) {
   lastStepWasLeftFooted = !lastStepWasLeftFooted;
 }
 
+// TODO: move lastDrawTime to game state (game.state.ui?)
 function checkCoordsForCurrentTask(coords) {
   const currentTask = game.tasks[game.state.currentTaskIndex];
-  return currentTask.checker(coords);
+  return currentTask.checker(coords, lastDrawTime);
 }
 
 function startTask() {
   game.state.hasTask = true;
   const currentTask = game.tasks[game.state.currentTaskIndex];
-  currentTask.setData(game.state.player);
+  currentTask.setData(game.state.player, lastDrawTime);
+  if (currentTask.startMessage) {
+    writeMessage(currentTask.startMessage);
+  }
+  console.log(`Starting task #${game.state.currentTaskIndex}`);
 }
 
 function resetInitialState() {
@@ -223,10 +228,10 @@ function resetGame() {
   // show reset-loop message
   game.state.resetting = true;
   canvasCover.fadeTo(1000, 1, () => $('.text-overlay').empty().addClass('resetting'));
-  writeDelayedMessage('You\'re not listening...', 2000);
-  let restartDelay = 10*1000;
+  writeDelayedMessage('You\'re not listening...', 500); // TODO: set for release, 2000?
+  let restartDelay = 1*1000; // TODO: set for release, 10*1000?
   if (game.meta.resets <= 1) {
-    writeDelayedMessage('I\'m telling you a story.', 6000);
+    writeDelayedMessage('I\'m telling you a story.', 500); // TODO: set for release, 6000?
   } else {
     restartDelay = 6000;
   }
@@ -339,8 +344,14 @@ function draw(timestamp) {
       resetGame();
     } else if (taskState.completed) {
       console.log('task completed!');
-      game.state.hasTask = false;
-      writeDelayedMessage('And he just stood there for a while.', 300);
+      game.state.hasTask = false; // startTask will set it to true
+      if (game.state.currentTaskIndex === game.tasks.length -1) {
+        console.log('---no more tasks---');
+      } else {
+        game.state.currentTaskIndex = game.state.currentTaskIndex + 1;
+        // TODO: allow tasks to specify delay
+        setTimeout(startTask, 1000);
+      }
     }
   }
 
@@ -425,7 +436,6 @@ function startDay() {
 
   setTimeout(
     function() {
-      writeMessage('He went straight to the X.');
       // TODO: only start task after msg is fully shown
       startTask();
     },
