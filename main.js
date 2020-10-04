@@ -2,7 +2,6 @@ function clone(o) {
   return JSON.parse(JSON.stringify(o));
 }
 
-/* State params */
 const game = {
   state: {
     currentTask: null,
@@ -67,12 +66,13 @@ for (let i=0; i<25; i++) {
 // re-sort every time a new element is added, or make sure it is inserted at the right place!
 function sortObjects() {
   game.state.objects.sort(function(a, b) {
+    // drawing will iterate this in reverse (so it can remove items), so we put lowest y coord last
     if (a.y < b.y) {
-      return -1;
-    } else if (a.y === b.y) {
-      return (a.x <= b.x)? -1 : 1;
-    } else {
       return 1;
+    } else if (a.y === b.y) {
+      return (a.x <= b.x)? 1 : -1;
+    } else {
+      return -1;
     }
   });
 }
@@ -379,7 +379,9 @@ function draw(timestamp) {
 
   // draw objects
   ctx.fillStyle = 'black';
-  game.state.objects.forEach(function(obj) {
+  // we iterate backwards to be able to remove faded items without complications
+  for (let i = game.state.objects.length -1; i >= 0; i--) {
+    const obj = game.state.objects[i];
     if (obj.assetURL) {
       ctx.save();
 
@@ -408,10 +410,8 @@ function draw(timestamp) {
           ctx.globalAlpha = Math.max(0, Math.min(1, newAlpha));
 
           if ((obj.fadeCounter - FADE_OUT_DELAY) >= FADE_OUT_DURATION) {
-            obj.isFadingOut = false;
-            delete obj.fadeCounter;
-            // TODO: remove object entirely instead (prob after moving to objects array)
-            obj.isHidden = true;
+            // we delete the faded out object entirely
+            game.state.objects.splice(i, 1);
           }
         }
       }
@@ -433,7 +433,7 @@ function draw(timestamp) {
       // fallback if no asset: draw a rect (used by debug gridpoints for now)
       ctx.fillRect(obj.x-1.5-viewport.x, obj.y-1.5-viewport.y, 3, 3);
     }
-  });
+  };
 
   // draw player
   ctx.fillStyle = 'green';
