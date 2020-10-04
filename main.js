@@ -116,7 +116,7 @@ function fadeInObject(obj) {
 }
 
 let lastStepWasLeftFooted = false;
-function addFootstep(x, y) {
+function addFootstep(x, y, angle) {
   let name = 'footstep'; // should not matter, just for uniqueness
   while (name in objects) {
     name += 'a';
@@ -124,6 +124,7 @@ function addFootstep(x, y) {
   objects[name] = {
     x: x,
     y: y,
+    angle: angle,
     isFadingOut: true,
     fadeCounter: 0,
     assetURL: 'assets/footprint.png',
@@ -153,6 +154,7 @@ function draw(timestamp) {
   };
 
   let hasMoved = false;
+  let movementAngle;
 
   // move player according to current pressed keys
   // TODO: separate drawing and simulation
@@ -164,6 +166,7 @@ function draw(timestamp) {
       playerInViewport.y = player.y - VIEWPORT.y;
     }
     hasMoved = true;
+    movementAngle = 0;
   }
   if (keysPressed.right) {
     player.x = Math.min(MAP_BOUNDS.x, player.x + PLAYER_SPEED);
@@ -173,6 +176,7 @@ function draw(timestamp) {
       playerInViewport.x = player.x - VIEWPORT.x;
     }
     hasMoved = true;
+    movementAngle = 90 * Math.PI / 180;
   }
   if (keysPressed.down) {
     player.y = Math.min(MAP_BOUNDS.y, player.y + PLAYER_SPEED);
@@ -182,6 +186,7 @@ function draw(timestamp) {
       playerInViewport.y = player.y - VIEWPORT.y;
     }
     hasMoved = true;
+    movementAngle = 180 * Math.PI / 180;
   }
   if (keysPressed.left) {
     player.x = Math.max(0, player.x - PLAYER_SPEED);
@@ -191,11 +196,12 @@ function draw(timestamp) {
       playerInViewport.x = player.x - VIEWPORT.x;
     }
     hasMoved = true;
+    movementAngle = 270 * Math.PI / 180;
   }
 
   // add footstep every once in a while
   if (hasMoved && !(drawCount%5)) {
-    addFootstep(player.x, player.y);
+    addFootstep(player.x, player.y, movementAngle);
   }
 
   // DEBUG logging
@@ -209,6 +215,8 @@ function draw(timestamp) {
   ctx.fillStyle = 'black';
   for (const [key, obj] of Object.entries(objects)) {
     if (obj.assetURL) {
+      ctx.save();
+
       let w, h;
       if (obj.width && obj.height) {
         w = obj.width;
@@ -228,7 +236,7 @@ function draw(timestamp) {
         }
       } else if (obj.isFadingOut) {
         // objects don't start fading out until hitting this delay
-        const fadeOutDelay = 20;
+        const fadeOutDelay = 30;
         obj.fadeCounter++;
         if (obj.fadeCounter > fadeOutDelay) {
           let newAlpha = 1 - (obj.fadeCounter - fadeOutDelay) / FADE_OUT_DURATION;
@@ -248,11 +256,15 @@ function draw(timestamp) {
         let dX = dY = 0;
         if (obj.offsetX) dX = obj.offsetX;
         if (obj.offsetY) dY = obj.offsetY;
-        ctx.drawImage(obj.image, obj.x-w/2-VIEWPORT.x + dX, obj.y-h/2-VIEWPORT.y + dY, w, h);
+        const computedX = obj.x - w/2 - VIEWPORT.x + dX;
+        const computedY = obj.y - h/2 - VIEWPORT.y + dY;
+        ctx.translate(computedX, computedY);
+        ctx.rotate(obj.angle || 0);
+        ctx.drawImage(obj.image, 0, 0, w, h);
       }
 
-      // reset any alpha values // FIXME: use ctx save and restore instead
-      ctx.globalAlpha = 1;
+      // reset any transformations
+      ctx.restore();
     } else {
       // fallback if no asset: draw a rect (used by debug gridpoints for now)
       ctx.fillRect(obj.x-1.5-VIEWPORT.x, obj.y-1.5-VIEWPORT.y, 3, 3);
