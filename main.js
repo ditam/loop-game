@@ -6,7 +6,9 @@ function clone(o) {
 const game = {
   state: {
     currentTask: null,
-    objects: {},
+    // objects is a coordinate-ordered list of map elements,
+    // so that no z-index needs to be considered when iterating and rendering
+    objects: [],
     player: {
       x: 650,
       y: 110
@@ -47,20 +49,34 @@ const el03 = {
 createImageRefFromObjAsset(el01);
 createImageRefFromObjAsset(el02);
 createImageRefFromObjAsset(el03);
-game.state.objects.el01 = el01;
-game.state.objects.el02 = el02;
-game.state.objects.el03 = el03;
+game.state.objects.push(el01);
+game.state.objects.push(el02);
+game.state.objects.push(el03);
 
 // generate debug gridmarks
 for (let i=0; i<25; i++) {
   for (let j=0; j<10; j++) {
-    const name = `marker_i${i}_j${j}`;
-    game.state.objects[name] = {
+    game.state.objects.push({
       x: i*100,
       y: j*100
-    };
+    });
   }
 }
+
+// sort objects by coordinates (so that z-index appearance is correct when drawn in order)
+// re-sort every time a new element is added, or make sure it is inserted at the right place!
+function sortObjects() {
+  game.state.objects.sort(function(a, b) {
+    if (a.y < b.y) {
+      return -1;
+    } else if (a.y === b.y) {
+      return (a.x <= b.x)? -1 : 1;
+    } else {
+      return 1;
+    }
+  });
+}
+sortObjects();
 
 // save initial state (will reset to this)
 game._initialState = clone(game.state);
@@ -125,12 +141,9 @@ const keysPressed = {
 
 let lastStepWasLeftFooted = false;
 function addFootstep(x, y, angle) {
-  let name = 'footstep'; // should not matter, just for uniqueness
-  while (name in game.state.objects) {
-    name += 'a';
-  }
-
+  // TODO: maybe keep these in separate collection rather than in objects?
   const footstepObj = {
+    type: 'footstep',
     x: x,
     y: y,
     angle: angle,
@@ -175,7 +188,7 @@ function addFootstep(x, y, angle) {
   }
 
   createImageRefFromObjAsset(footstepObj);
-  game.state.objects[name] = footstepObj;
+  game.state.objects.push(footstepObj);
 
   lastStepWasLeftFooted = !lastStepWasLeftFooted;
 }
@@ -225,11 +238,11 @@ function resetInitialState() {
   game.state = clone(game._initialState);
   // clone does not carry the HTMLImageElements, so we re-add them
   // TODO: there should be a more efficient way of doing this - update clone?
-  for (const [key, obj] of Object.entries(game.state.objects)) {
+  game.state.objects.forEach(function(obj) {
     if (obj.assetURL) {
       createImageRefFromObjAsset(obj);
     }
-  }
+  });
 }
 
 function resetGame() {
@@ -366,7 +379,7 @@ function draw(timestamp) {
 
   // draw objects
   ctx.fillStyle = 'black';
-  for (const [key, obj] of Object.entries(game.state.objects)) {
+  game.state.objects.forEach(function(obj) {
     if (obj.assetURL) {
       ctx.save();
 
@@ -420,7 +433,7 @@ function draw(timestamp) {
       // fallback if no asset: draw a rect (used by debug gridpoints for now)
       ctx.fillRect(obj.x-1.5-viewport.x, obj.y-1.5-viewport.y, 3, 3);
     }
-  }
+  });
 
   // draw player
   ctx.fillStyle = 'green';
@@ -445,7 +458,8 @@ function startDay() {
     5000
   );
 
-  setTimeout(function() {game.utils.fadeInObject(game.state.objects.el02)}, 3000);
+  // TODO: reference via game.state.objects?
+  setTimeout(function() {game.utils.fadeInObject(el02)}, 3000);
 }
 
 $(document).ready(function() {
