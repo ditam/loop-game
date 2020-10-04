@@ -114,8 +114,8 @@ function fadeInObject(obj) {
   obj.fadeCounter = 0;
 }
 
+let lastStepWasLeftFooted = false;
 function addFootstep(x, y) {
-  console.log('adding footstep at', x, y);
   let name = 'footstep'; // should not matter, just for uniqueness
   while (name in objects) {
     name += 'a';
@@ -125,10 +125,14 @@ function addFootstep(x, y) {
     y: y,
     isFadingOut: true,
     fadeCounter: 0,
-    assetURL: 'assets/footprint.png'
+    assetURL: 'assets/footprint.png',
+    width: 12,
+    height: 12,
+    offsetX: lastStepWasLeftFooted? 12 : 0
     // TODO: add support for rotation
   };
   createImageRefFromObjAsset(objects[name]);
+  lastStepWasLeftFooted = !lastStepWasLeftFooted;
 }
 
 let drawCount = 0;
@@ -189,7 +193,7 @@ function draw(timestamp) {
   }
 
   // add footstep every once in a while
-  if (hasMoved && !(drawCount%10)) {
+  if (hasMoved && !(drawCount%5)) {
     addFootstep(player.x, player.y);
   }
 
@@ -224,7 +228,11 @@ function draw(timestamp) {
       }
 
       if (!obj.isHidden) {
-        ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x, obj.y-5-VIEWPORT.y, w, h);
+        let dX = dY = 0;
+        if (obj.offsetX) dX = obj.offsetX;
+        if (obj.offsetY) dY = obj.offsetY;
+        // FIXME: replace static 5 with obj size/2 to center
+        ctx.drawImage(obj.image, obj.x-5-VIEWPORT.x + dX, obj.y-5-VIEWPORT.y + dY, w, h);
       }
 
       // reset any alpha values // FIXME: use ctx save and restore instead
