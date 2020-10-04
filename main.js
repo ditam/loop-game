@@ -345,6 +345,12 @@ function draw(timestamp) {
     } else if (taskState.completed) {
       console.log('task completed!');
       game.state.hasTask = false; // startTask will set it to true
+
+      // write end-message if task has one
+      if (game.tasks[game.state.currentTaskIndex].endMessage) {
+        writeMessage(game.tasks[game.state.currentTaskIndex].endMessage);
+      }
+
       if (game.state.currentTaskIndex === game.tasks.length -1) {
         console.log('---no more tasks---');
       } else {
