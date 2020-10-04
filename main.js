@@ -1,20 +1,4 @@
 
-/* Constant params */
-const WIDTH = 800;
-const HEIGHT = 500;
-const PLAYER_SPEED = 3;
-
-const MAP_BOUNDS = {
-  x: 1500,
-  y: 800
-};
-
-// The map will scroll if the player is within this distance from the viewport edge
-const MAP_SCROLL_PADDING = 100;
-
-const FADE_IN_DURATION = 100;
-const FADE_OUT_DURATION = 150;
-
 function clone(o) {
   return JSON.parse(JSON.stringify(o));
 }
@@ -37,6 +21,7 @@ const game = {
   meta: {
     resets: 0
   }
+  // NB: other files also attach to the game object
 };
 
 // add debug placeholder objects
@@ -218,7 +203,7 @@ function isObjectInProximity(playerCoords, objectCoords) {
   const yDist = Math.abs(playerCoords.y - objectCoords.y);
 
   const distSquared = xDist*xDist + yDist*yDist;
-  return distSquared < 40*40;
+  return distSquared < ACTIVITY_RADIUS*ACTIVITY_RADIUS;
 }
 
 function checkCoordsForCurrentTask(coords) {
@@ -376,7 +361,7 @@ function draw(timestamp) {
   }
 
   // add footstep every once in a while
-  if (hasMoved && !(drawCount%5)) {
+  if (hasMoved && !(drawCount%FOOTSTEP_FREQUENCY)) {
     let angle = avg(movementAngles);
 
     // Bugfix: if we are going up & left, rewrite angle manually to 315deg
@@ -416,8 +401,8 @@ function draw(timestamp) {
         w = obj.width;
         h = obj.height;
       } else {
-        w = 10;
-        h = 10;
+        w = OBJECT_DEFAULT_SIZE;
+        h = OBJECT_DEFAULT_SIZE;
       }
 
       // if the object is fading, apply an alpha to the drawing context
@@ -429,15 +414,13 @@ function draw(timestamp) {
           delete obj.fadeCounter;
         }
       } else if (obj.isFadingOut) {
-        // objects don't start fading out until hitting this delay
-        const fadeOutDelay = 15;
         obj.fadeCounter++;
-        if (obj.fadeCounter > fadeOutDelay) {
-          let newAlpha = 1 - (obj.fadeCounter - fadeOutDelay) / FADE_OUT_DURATION;
+        if (obj.fadeCounter > FADE_OUT_DELAY) {
+          let newAlpha = 1 - (obj.fadeCounter - FADE_OUT_DELAY) / FADE_OUT_DURATION;
           // with the delay, we might get out of semantic range - easiest to just clip
           ctx.globalAlpha = Math.max(0, Math.min(1, newAlpha));
 
-          if ((obj.fadeCounter - fadeOutDelay) >= FADE_OUT_DURATION) {
+          if ((obj.fadeCounter - FADE_OUT_DELAY) >= FADE_OUT_DURATION) {
             obj.isFadingOut = false;
             delete obj.fadeCounter;
             // TODO: remove object entirely instead (prob after moving to objects array)
