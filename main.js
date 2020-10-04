@@ -393,7 +393,7 @@ function draw(timestamp) {
       resetGame();
     } else if (taskState.completed) {
       console.log('task completed!');
-      game.state.currentTask = {};
+      game.state.currentTask = null;
       writeDelayedMessage('And he just stood there for a while.', 300);
     }
   }
