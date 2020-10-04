@@ -503,7 +503,8 @@ $(document).ready(function() {
   canvasCover = $('#canvas-cover');
   canvasCover.css('height', HEIGHT);
   canvasCover.css('width', WIDTH);
-  canvasCover.fadeTo(600, 0);
+  $('#text-overlay').css('opacity', 0);
+  canvasCover.fadeTo(600, 0, () => $('#text-overlay').fadeTo(300, 1));
 
   const DEBUG_KEYCODE = 68; // -> press and hold d for debug info
   DEBUG_LOG = $('#debug-log');
