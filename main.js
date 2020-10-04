@@ -128,7 +128,8 @@ function addFootstep(x, y, angle) {
   while (name in objects) {
     name += 'a';
   }
-  objects[name] = {
+
+  const footstepObj = {
     x: x,
     y: y,
     angle: angle,
@@ -137,9 +138,44 @@ function addFootstep(x, y, angle) {
     assetURL: 'assets/footprint.png',
     width: 15,
     height: 15,
-    offsetX: lastStepWasLeftFooted? 6 : -6
   };
-  createImageRefFromObjAsset(objects[name]);
+
+  // instead of writing the general math, slanted angles are the combination of the
+  // straight components with half lengths
+  switch (angle) {
+    case 0:
+      footstepObj.offsetX = lastStepWasLeftFooted? 6 : -6;
+      break;
+    case (45 * Math.PI / 180):
+      footstepObj.offsetX = lastStepWasLeftFooted? 3 : -3;
+      footstepObj.offsetY = lastStepWasLeftFooted? 3 : -3;
+      break;
+    case (90 * Math.PI / 180):
+      footstepObj.offsetY = lastStepWasLeftFooted? 6 : -6;
+      break;
+    case (135 * Math.PI / 180):
+      footstepObj.offsetY = lastStepWasLeftFooted? 3 : -3;
+      footstepObj.offsetX = lastStepWasLeftFooted? 3 : 9;
+      break;
+    case (180 * Math.PI / 180):
+      footstepObj.offsetX = lastStepWasLeftFooted? 6 : 18;
+      break;
+    case (225 * Math.PI / 180):
+      footstepObj.offsetX = lastStepWasLeftFooted? 3 : 9;
+      footstepObj.offsetY = lastStepWasLeftFooted? 3 : 9;
+      break;
+    case (270 * Math.PI / 180):
+      footstepObj.offsetY = lastStepWasLeftFooted? 6 : 18;
+      break;
+    case (315 * Math.PI / 180):
+      footstepObj.offsetY = lastStepWasLeftFooted? 3 : 9;
+      footstepObj.offsetX = lastStepWasLeftFooted? 3 : -3;
+      break;
+  }
+
+  createImageRefFromObjAsset(footstepObj);
+  objects[name] = footstepObj;
+
   lastStepWasLeftFooted = !lastStepWasLeftFooted;
 }
 
@@ -207,7 +243,13 @@ function draw(timestamp) {
 
   // add footstep every once in a while
   if (hasMoved && !(drawCount%5)) {
-    addFootstep(player.x, player.y, avg(movementAngles));
+    let angle = avg(movementAngles);
+
+    // Bugfix: if we are going up & left, rewrite angle manually to 315deg
+    // (This is an inherent problem with the avg method, if we pushed 360 instead of 0, up-right would need fixing.)
+    if (keysPressed.left && keysPressed.up) angle = 315 * Math.PI / 180;
+
+    addFootstep(player.x, player.y, angle);
   }
 
   // DEBUG logging
