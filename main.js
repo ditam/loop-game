@@ -4,7 +4,8 @@ function clone(o) {
 
 const game = {
   state: {
-    currentTask: null,
+    hasTask: false,
+    currentTaskIndex: 0,
     // objects is a coordinate-ordered list of map elements,
     // so that no z-index needs to be considered when iterating and rendering
     objects: [],
@@ -194,43 +195,14 @@ function addFootstep(x, y, angle) {
 }
 
 function checkCoordsForCurrentTask(coords) {
-  const taskState = {
-    completed: false,
-    failed: false
-  };
-
-  const bounds = game.state.currentTask.acceptableBounds;
-  if (coords.x < bounds.x0 || coords.y < bounds.y0 || coords.x > bounds.x1 || coords.y > bounds.y1) {
-    taskState.failed = true;
-  }
-
-  taskState.completed = game.utils.isObjectInProximity(coords, game.state.currentTask.target);
-
-  return taskState;
+  const currentTask = game.tasks[game.state.currentTaskIndex];
+  return currentTask.checker(coords);
 }
 
 function startTask() {
-  // TODO: move target to params
-  game.state.currentTask = {
-    target: {
-      x: 200,
-      y: 300
-    },
-    startPosition: {
-      x: game.state.player.x,
-      y: game.state.player.y
-    }
-  };
-  const currentTask = game.state.currentTask;
-  currentTask.acceptableBounds = {
-    x0: Math.min(currentTask.target.x, currentTask.startPosition.x) - 50,
-    y0: Math.min(currentTask.target.y, currentTask.startPosition.y) - 50,
-    x1: Math.max(currentTask.target.x, currentTask.startPosition.x) + 50,
-    y1: Math.max(currentTask.target.y, currentTask.startPosition.y) + 50
-  }
-  // TODO: save times - will allow waiting tasks and speed-based checks
-
-  console.log('started task:', currentTask);
+  game.state.hasTask = true;
+  const currentTask = game.tasks[game.state.currentTaskIndex];
+  currentTask.setData(game.state.player);
 }
 
 function resetInitialState() {
@@ -359,13 +331,13 @@ function draw(timestamp) {
   }
 
   // check if movement satisfies current task
-  if (game.state.currentTask) {
+  if (game.state.hasTask) {
     const taskState = checkCoordsForCurrentTask({x: player.x, y: player.y});
     if (taskState.failed) {
       resetGame();
     } else if (taskState.completed) {
       console.log('task completed!');
-      game.state.currentTask = null;
+      game.state.hasTask = false;
       writeDelayedMessage('And he just stood there for a while.', 300);
     }
   }
