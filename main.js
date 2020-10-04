@@ -1,4 +1,3 @@
-
 function clone(o) {
   return JSON.parse(JSON.stringify(o));
 }
@@ -66,14 +65,16 @@ for (let i=0; i<25; i++) {
 // save initial state (will reset to this)
 game._initialState = clone(game.state);
 
-let DEBUG_LOG;
-
-function avg(array) {
-  if (!array.length) return 0;
-  let sum = 0;
-  array.forEach(x => sum+=x);
-  return sum/array.length;
+function createImageRefFromObjAsset(obj) {
+  if (obj.assetURL) {
+    const image = $('<img>').attr('src', obj.assetURL);
+    obj.image = image.get(0);
+  } else {
+    console.error('Object has no asset URL:', obj);
+  }
 }
+
+let DEBUG_LOG;
 
 // TODO: add param for duration - if missing, do not erase
 function writeMessage(msg) {
@@ -121,25 +122,6 @@ const keysPressed = {
   down: false,
   left: false
 };
-
-function createImageRefFromObjAsset(obj) {
-  if (obj.assetURL) {
-    const image = $('<img>').attr('src', obj.assetURL);
-    obj.image = image.get(0);
-  } else {
-    console.error('Object has no asset URL:', obj);
-  }
-}
-
-function fadeInObject(obj) {
-  if (!obj.isHidden) {
-    console.warn('Object is already displayed or fading in:', obj);
-  }
-
-  obj.isHidden = false;
-  obj.isFadingIn = true;
-  obj.fadeCounter = 0;
-}
 
 let lastStepWasLeftFooted = false;
 function addFootstep(x, y, angle) {
@@ -198,14 +180,6 @@ function addFootstep(x, y, angle) {
   lastStepWasLeftFooted = !lastStepWasLeftFooted;
 }
 
-function isObjectInProximity(playerCoords, objectCoords) {
-  const xDist = Math.abs(playerCoords.x - objectCoords.x);
-  const yDist = Math.abs(playerCoords.y - objectCoords.y);
-
-  const distSquared = xDist*xDist + yDist*yDist;
-  return distSquared < ACTIVITY_RADIUS*ACTIVITY_RADIUS;
-}
-
 function checkCoordsForCurrentTask(coords) {
   const taskState = {
     completed: false,
@@ -217,7 +191,7 @@ function checkCoordsForCurrentTask(coords) {
     taskState.failed = true;
   }
 
-  taskState.completed = isObjectInProximity(coords, game.state.currentTask.target);
+  taskState.completed = game.utils.isObjectInProximity(coords, game.state.currentTask.target);
 
   return taskState;
 }
@@ -362,7 +336,7 @@ function draw(timestamp) {
 
   // add footstep every once in a while
   if (hasMoved && !(drawCount%FOOTSTEP_FREQUENCY)) {
-    let angle = avg(movementAngles);
+    let angle = game.utils.avg(movementAngles);
 
     // Bugfix: if we are going up & left, rewrite angle manually to 315deg
     // (This is an inherent problem with the avg method, if we pushed 360 instead of 0, up-right would need fixing.)
@@ -471,7 +445,7 @@ function startDay() {
     5000
   );
 
-  setTimeout(function() {fadeInObject(game.state.objects.el02)}, 3000);
+  setTimeout(function() {game.utils.fadeInObject(game.state.objects.el02)}, 3000);
 }
 
 $(document).ready(function() {
