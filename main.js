@@ -2,6 +2,9 @@ function clone(o) {
   return JSON.parse(JSON.stringify(o));
 }
 
+// a cache of HTMLImageElements, so that objects with the same asset use the same img object
+const assetURL2ImageCache = {};
+
 const game = {
   state: {
     currentTaskIndex: 0,
@@ -80,15 +83,15 @@ game.state.objects.push(el03);
 game.state.objects.push(el04);
 game.state.objects.push(el05);
 
-// generate debug gridmarks
-for (let i=0; i<25; i++) {
-  for (let j=0; j<10; j++) {
-    game.state.objects.push({
-      x: i*100,
-      y: j*100
-    });
-  }
-}
+// DEBUG: generate gridmarks
+// for (let i=0; i<25; i++) {
+//   for (let j=0; j<10; j++) {
+//     game.state.objects.push({
+//       x: i*100,
+//       y: j*100
+//     });
+//   }
+// }
 
 // sort objects by coordinates (so that z-index appearance is correct when drawn in order)
 // re-sort every time a new element is added, or make sure it is inserted at the right place!
@@ -111,10 +114,13 @@ game._initialState = clone(game.state);
 console.log('saved initial state:', game._initialState);
 
 function createImageRefFromObjAsset(obj) {
-  // TODO: create an assetUrl -> HTMLImageElement cache
   if (obj.assetURL) {
-    const image = $('<img>').attr('src', obj.assetURL);
-    obj.image = image.get(0);
+    const url = obj.assetURL;
+    if (!(url in assetURL2ImageCache)) {
+      const image = $('<img>').attr('src', url);
+      assetURL2ImageCache[url] = image.get(0);
+    }
+    obj.image = assetURL2ImageCache[url];
   } else {
     console.error('Object has no asset URL:', obj);
   }
