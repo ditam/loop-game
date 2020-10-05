@@ -522,6 +522,17 @@ $(document).ready(function() {
     }
   });
 
+  const mobileControlsButton = $('#mobile-controls-button');
+  const mobileControls = $('#mobile-controls');
+  mobileControlsButton.click(function() {
+    mobileControls.toggle();
+  });
+
+  ['up', 'right', 'down', 'left'].forEach(function(dir) {
+    $(`#mobile-${dir}`).on('mousedown touchstart', () => keysPressed[dir] = true);
+    $(`#mobile-${dir}`).on('mouseup touchend', () => keysPressed[dir] = false);
+  });
+
   startDay();
 
   requestAnimationFrame(draw);

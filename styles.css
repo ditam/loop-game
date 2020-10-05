@@ -35,3 +35,59 @@ canvas {
 #text-measure-helper {
   display: none;
 }
+
+#controls {
+  margin-top: 12px;
+  width: 800px;
+  height: 50px;
+}
+
+#controls #mobile-controls-button {
+  float: right;
+  background-color: #ccc;
+  width: 100px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  cursor: pointer;
+}
+
+#controls #mobile-controls-button:hover, #controls #mobile-controls-button:active {
+  background-color: #caa;
+}
+
+#mobile-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 240px;
+  user-select: none;
+  display: none;
+}
+
+#mobile-controls .mobile-button {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  line-height: 80px;
+  text-align: center;
+  background-color: gray;
+}
+
+#mobile-controls #mobile-up {
+  top: 0;
+  left: 80px;
+}
+#mobile-controls #mobile-right {
+  top: 80px;
+  left: 160px;
+}
+#mobile-controls #mobile-down {
+  top: 160px;
+  left: 80px;
+}
+#mobile-controls #mobile-left {
+  top: 80px;
+  left: 0;
+}
