@@ -5,14 +5,19 @@
   game.tasks = [
     {
       id: 'go-to-x',
-      startMessage: 'He went straight to the X.',
+      startMessage: 'He went straight to the well.',
       endMessage: null,
-      setData: function(player) {
+      startEffect: function(gameState) {
+        const well = game.utils.findObjectByID('well', gameState.objects);
+        game.utils.fadeInObject(well);
+      },
+      setData: function(player, gameState) {
         // TODO: move target to params, then we can create "go-to-x" task type
+        const well = game.utils.findObjectByID('well', gameState.objects);
         currentTask = {
           target: {
-            x: 200,
-            y: 300
+            x: well.x,
+            y: well.y
           },
           startPosition: {
             x: player.x,
@@ -50,16 +55,16 @@
       id: 'stay-here',
       startMessage: 'And he just stood there for a while.',
       endMessage: 'Indeed.',
-      setData: function(player, time) {
+      setData: function(player, gameState) {
         currentTask = {
           startPosition: {
             x: player.x,
             y: player.y
           },
-          startTime: time
+          startTime: gameState.lastDrawTime
         };
       },
-      checker: function(playerCoords, time) {
+      checker: function(playerCoords, gameState) {
         const taskState = {
           completed: false,
           failed: false
@@ -73,7 +78,7 @@
           taskState.failed = true;
         }
 
-        taskState.completed = time - currentTask.startTime > 5000;
+        taskState.completed = gameState.lastDrawTime - currentTask.startTime > 5000;
 
         return taskState;
       }
@@ -89,16 +94,16 @@
         };
         gameState.choices++;
       },
-      setData: function(player, time) {
+      setData: function(player, gameState) {
         currentTask = {
           target: {
             x: 660,
             y: 450
           },
-          startTime: time
+          startTime: gameState.lastDrawTime
         };
       },
-      checker: function(playerCoords, time) {
+      checker: function(playerCoords) {
         const taskState = {
           completed: false,
           failed: false

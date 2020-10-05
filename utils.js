@@ -11,6 +11,7 @@ game.utils = {
     // TODO: use viewport or some space partitioning to make this more performant? Will do for now...
     objects.forEach(function(obj) {
       if (obj.isHidden && game.utils.dist(x, y, obj.x, obj.y) < OBJECT_DISCOVERY_RANGE) {
+        if (obj.forceHide) return; // such objects need explicit reveal
         game.utils.fadeInObject(obj);
       }
     });
@@ -28,6 +29,7 @@ game.utils = {
     }
 
     obj.isHidden = false;
+    delete obj.forceHide;
     obj.isFadingIn = true;
     obj.fadeCounter = 0;
   },

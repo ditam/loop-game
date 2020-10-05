@@ -81,7 +81,6 @@ function writeDelayedMessage(msg, delay) {
 /* rendering and simulation globals */
 let ctx; // canvas 2d context
 let startTime;
-let lastDrawTime;
 let canvasCover;
 
 /* user interaction state */
@@ -146,24 +145,26 @@ function addFootstep(x, y, angle) {
   lastStepWasLeftFooted = !lastStepWasLeftFooted;
 }
 
-// TODO: move lastDrawTime to game state (game.state.ui?)
+function showChoiceMarker() {
+  $('#choice-marker').fadeTo(500, 1);
+}
+
 function checkCoordsForCurrentTask(coords) {
   const currentTask = game.tasks[game.state.currentTaskIndex];
-  return currentTask.checker(coords, lastDrawTime);
+  return currentTask.checker(coords, game.state);
 }
 
 function startTask() {
   game.state.hasTask = true;
   const currentTask = game.tasks[game.state.currentTaskIndex];
-  currentTask.setData(game.state.player, lastDrawTime);
+  currentTask.setData(game.state.player, game.state);
   if (currentTask.startMessage) {
     writeMessage(currentTask.startMessage);
   }
+  if (currentTask.startEffect) {
+    currentTask.startEffect(game.state);
+  }
   console.log(`Starting task #${game.state.currentTaskIndex}`);
-}
-
-function showChoiceMarker() {
-  $('#choice-marker').fadeTo(500, 1);
 }
 
 function processCompletedTask() {
@@ -249,7 +250,7 @@ function draw(timestamp) {
 
   if (!startTime) {
     startTime = timestamp;
-    lastDrawTime = timestamp;
+    game.state.lastDrawTime = timestamp;
   }
 
   // shorthands
@@ -406,12 +407,12 @@ function draw(timestamp) {
   };
 
   // draw player
-  ctx.fillStyle = 'green';
+  ctx.fillStyle = '#9e2222';
   ctx.beginPath();
   ctx.arc(playerInViewport.x, playerInViewport.y, 10, 0, 2 * Math.PI);
   ctx.fill();
 
-  lastDrawTime = timestamp;
+  game.state.lastDrawTime = timestamp;
   drawCount++;
   requestAnimationFrame(draw);
 }

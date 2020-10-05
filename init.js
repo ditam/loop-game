@@ -5,18 +5,17 @@ const game = {
     choices: 0,
     currentTaskIndex: 0,
     hasTask: false,
+    lastDrawTime: 0,
     mapBounds: {
-      //x: 800,
-      //y: 500
-      x: 1500,
-      y: 700
+      x: 800,
+      y: 500
     },
     // objects is a coordinate-ordered list of map elements,
     // so that no z-index needs to be considered when iterating and rendering
     objects: [],
     player: {
-      x: 650,
-      y: 110
+      x: 420,
+      y: 270
     },
     resetting: false,
     viewport: {
@@ -32,54 +31,70 @@ const game = {
 // add debug placeholder objects
 game.state.objects = [
   {
-    x: 280,
-    y: 111,
-    isHidden: true,
-    assetURL: 'assets/watchtower.png',
-    width: 128,
-    height: 128
-  },
-  {
-    id: 'red-x',
-    x: 200,
-    y: 300,
-    isHidden: true,
+    x: 420,
+    y: 210,
+    isHidden: false,
     assetURL: 'assets/house.png',
-    width: 70,
-    height: 70
+    id: 'home',
+    width: 96,
+    height: 96
   },
   {
-    x: 680,
-    y: 450,
-    isHidden: true,
-    assetURL: 'assets/tree-group.png',
-    width: 70,
-    height: 70
+    x: 470,
+    y: 150,
+    isHidden: false,
+    assetURL: 'assets/tree1.png',
   },
   {
-    x: 700,
-    y: 430,
-    isHidden: true,
+    x: 390,
+    y: 170,
+    isHidden: false,
     assetURL: 'assets/tree-group.png',
-    width: 70,
-    height: 70
   },
   {
-    x: 400,
-    y: 430,
+    x: 100,
+    y: 350,
     isHidden: true,
-    assetURL: 'assets/tree-group.png',
-    width: 50,
-    height: 50
+    assetURL: 'assets/well.png',
+    id: 'well'
+  },
+  {
+    x: 550,
+    y: 330,
+    isHidden: true,
+    assetURL: 'assets/fire-out.png',
+    id: 'fire-out'
+  },
+  {
+    x: 550,
+    y: 330,
+    isHidden: true,
+    forceHide: true, // can only be revealed explicitly, not via discovery
+    assetURL: 'assets/fire.png',
+    id: 'fire-lit'
   },
   {
     x: 500,
-    y: 320,
+    y: 200,
     isHidden: true,
-    assetURL: 'assets/tree-large.png',
-    width: 50,
-    height: 50
-  }
+    assetURL: 'assets/fence.png',
+    id: 'fence-broken'
+  },
+  {
+    x: 550,
+    y: 200,
+    isHidden: true,
+    assetURL: 'assets/fence-broken.png',
+    id: 'fence-broken'
+  },
+  {
+    x: 550,
+    y: 200,
+    isHidden: true,
+    forceHide: true,
+    assetURL: 'assets/fence.png',
+    id: 'fence-mended'
+  },
 ];
 
 // DEBUG: generate gridmarks
