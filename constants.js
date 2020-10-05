@@ -8,11 +8,6 @@ const PLAYER_SPEED = 3;
 // draws a new footstep every this many frames - note player speed above
 const FOOTSTEP_FREQUENCY = 5;
 
-const MAP_BOUNDS = {
-  x: 1500,
-  y: 800
-};
-
 // The map will scroll if the player is within this distance from the viewport edge
 const MAP_SCROLL_PADDING = 100;
 

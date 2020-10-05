@@ -49,7 +49,7 @@
     {
       id: 'stay-here',
       startMessage: 'And he just stood there for a while.',
-      endMessage: 'Completed',
+      endMessage: 'Indeed.',
       setData: function(player, time) {
         currentTask = {
           startPosition: {
@@ -74,6 +74,36 @@
         }
 
         taskState.completed = time - currentTask.startTime > 5000;
+
+        return taskState;
+      }
+    },
+    {
+      id: 'free-roam-to-green',
+      startMessage: 'And he went to the green thing.',
+      endMessage: 'Which expanded his map!',
+      endEffect: function(gameState) {
+        gameState.mapBounds = {
+          x: 1400,
+          y: 500
+        };
+      },
+      setData: function(player, time) {
+        currentTask = {
+          target: {
+            x: 660,
+            y: 450
+          },
+          startTime: time
+        };
+      },
+      checker: function(playerCoords, time) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
 
         return taskState;
       }

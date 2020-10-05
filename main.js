@@ -4,8 +4,12 @@ function clone(o) {
 
 const game = {
   state: {
-    hasTask: false,
     currentTaskIndex: 0,
+    hasTask: false,
+    mapBounds: {
+      x: 800,
+      y: 500
+    },
     // objects is a coordinate-ordered list of map elements,
     // so that no z-index needs to be considered when iterating and rendering
     objects: [],
@@ -41,8 +45,8 @@ const el02 = {
   height: 30
 };
 const el03 = {
-  x: 210,
-  y: 470,
+  x: 660,
+  y: 450,
   assetURL: 'assets/test03.png',
   width: 20,
   height: 20
@@ -274,6 +278,7 @@ function draw(timestamp) {
   // shorthands
   const player = game.state.player;
   const viewport = game.state.viewport;
+  const mapBounds = game.state.mapBounds;
 
   const playerInViewport = {
     x: player.x-viewport.x,
@@ -296,20 +301,20 @@ function draw(timestamp) {
     movementAngles.push(0);
   }
   if (keysPressed.right) {
-    player.x = Math.min(MAP_BOUNDS.x, player.x + PLAYER_SPEED);
+    player.x = Math.min(mapBounds.x, player.x + PLAYER_SPEED);
     playerInViewport.x = player.x - viewport.x;
     if (playerInViewport.x >= WIDTH - MAP_SCROLL_PADDING) {
-      viewport.x = Math.min(MAP_BOUNDS.x - WIDTH, viewport.x + PLAYER_SPEED);
+      viewport.x = Math.min(mapBounds.x - WIDTH, viewport.x + PLAYER_SPEED);
       playerInViewport.x = player.x - viewport.x;
     }
     hasMoved = true;
     movementAngles.push(90 * Math.PI / 180);
   }
   if (keysPressed.down) {
-    player.y = Math.min(MAP_BOUNDS.y, player.y + PLAYER_SPEED);
+    player.y = Math.min(mapBounds.y, player.y + PLAYER_SPEED);
     playerInViewport.y = player.y - viewport.y;
     if (playerInViewport.y >= HEIGHT- MAP_SCROLL_PADDING) {
-      viewport.y = Math.min(MAP_BOUNDS.y - HEIGHT, viewport.y + PLAYER_SPEED);
+      viewport.y = Math.min(mapBounds.y - HEIGHT, viewport.y + PLAYER_SPEED);
       playerInViewport.y = player.y - viewport.y;
     }
     hasMoved = true;
@@ -351,6 +356,12 @@ function draw(timestamp) {
         writeMessage(game.tasks[game.state.currentTaskIndex].endMessage);
       }
 
+      // apply task effects
+      if (game.tasks[game.state.currentTaskIndex].endEffect) {
+        game.tasks[game.state.currentTaskIndex].endEffect(game.state);
+      }
+
+      // cycle to next task with a timeout
       if (game.state.currentTaskIndex === game.tasks.length -1) {
         console.log('---no more tasks---');
       } else {
