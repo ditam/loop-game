@@ -55,7 +55,7 @@ const el02 = {
   height: 70
 };
 const el03 = {
-  x: 660,
+  x: 680,
   y: 450,
   isHidden: true,
   assetURL: 'assets/tree-group.png',
@@ -64,7 +64,7 @@ const el03 = {
 };
 const el04 = {
   x: 700,
-  y: 350,
+  y: 430,
   isHidden: true,
   assetURL: 'assets/tree-group.png',
   width: 70,

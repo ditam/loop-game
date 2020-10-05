@@ -20,7 +20,7 @@ const FADE_OUT_DELAY = 20;
 // The player is considered to be "at" an object within this radius
 const ACTIVITY_RADIUS = 40;
 
-const OBJECT_DEFAULT_SIZE = 10;
+const OBJECT_DEFAULT_SIZE = 64;
 
 // objects within this radius from the player are discovered
 const OBJECT_DISCOVERY_RANGE = 150;
