@@ -16,7 +16,7 @@ canvas {
 #choice-marker {
   position: absolute;
   top: 15px;
-  left: 735px;
+  left: 835px;
   width: 45px;
   height: 10px;
   border: 1px solid #457545;
@@ -49,7 +49,7 @@ canvas {
 
 #controls {
   margin-top: 12px;
-  width: 800px;
+  width: 900px;
   height: 50px;
 }
 

@@ -1,7 +1,7 @@
 
 /* Game constants */
 
-const WIDTH = 800;
+const WIDTH = 900;
 const HEIGHT = 500;
 
 const PLAYER_SPEED = 3;
