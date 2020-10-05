@@ -153,7 +153,7 @@
           playerCoords.x !== currentTask.startPosition.x ||
           playerCoords.y !== currentTask.startPosition.y
         ) {
-          if (gameState.lastDrawTime - currentTask.startTime < 500) {
+          if (gameState.lastDrawTime - currentTask.startTime > 300) {
             taskState.failed = true;
           }
         }

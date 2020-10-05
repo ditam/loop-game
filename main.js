@@ -235,11 +235,12 @@ function resetInitialState() {
 function resetGame(customMessage) {
   // show reset-loop message
   game.state.resetting = true;
-  // we immediately start fading, but delay the text removal for a bit
-  canvasCover.fadeTo(1000, 1);
+  // we delay a bit, but once we start fading, we immediately remove the text.
   setTimeout(function() {
+    canvasCover.fadeTo(1000, 1);
     $('.text-overlay').empty().addClass('resetting');
   }, 400);
+
   hideChoiceMarker();
 
   writeDelayedMessage(customMessage || 'You\'re not listening...', 2000);
