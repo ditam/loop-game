@@ -52,11 +52,29 @@ game.state.objects = [
     assetURL: 'assets/tree-group.png',
   },
   {
+    x: 240,
+    y: 200,
+    isHidden: true,
+    assetURL: 'assets/tree3.png',
+  },
+  {
     x: 100,
     y: 350,
     isHidden: true,
     assetURL: 'assets/well.png',
     id: 'well'
+  },
+  {
+    x: 70,
+    y: 320,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png',
+  },
+  {
+    x: 90,
+    y: 450,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png',
   },
   {
     x: 550,

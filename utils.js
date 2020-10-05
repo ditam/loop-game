@@ -26,6 +26,7 @@ game.utils = {
   fadeInObject: function(obj) {
     if (!obj.isHidden) {
       console.warn('Object is already displayed or fading in:', obj);
+      return;
     }
 
     obj.isHidden = false;

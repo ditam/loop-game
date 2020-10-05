@@ -46,11 +46,16 @@ function createImageRefFromObjAsset(obj) {
 let DEBUG_LOG;
 
 // TODO: add param for duration - if missing, do not erase
+let timeout = null;
 function writeMessage(msg) {
   const target = $('#text-overlay');
   const textSizer = $('#text-measure-helper');
 
-  const charDelay = 35;
+  if (timeout) {
+    // TODO: make this more robust against race conditions...
+    console.warn('Previous timeout is active! target state:', target.text());
+    clearTimeout(timeout);
+  }
   target.empty();
 
   // to align the text to the center,
@@ -65,7 +70,9 @@ function writeMessage(msg) {
     if (i < msg.length) {
       target.text(target.text() + msg[i]);
       i++;
-      setTimeout(_writeChar, charDelay);
+      timeout = setTimeout(_writeChar, MESSAGE_CHAR_DELAY);
+    } else {
+      timeout = null;
     }
   })();
 }
@@ -212,11 +219,15 @@ function resetInitialState() {
 function resetGame() {
   // show reset-loop message
   game.state.resetting = true;
-  canvasCover.fadeTo(1000, 1, () => $('.text-overlay').empty().addClass('resetting'));
-  writeDelayedMessage('You\'re not listening...', 500); // TODO: set for release, 2000?
-  let restartDelay = 1*1000; // TODO: set for release, 10*1000?
+  // we immediately start fading, but delay the text removal for a bit
+  canvasCover.fadeTo(1000, 1);
+  setTimeout(function() {
+    $('.text-overlay').empty().addClass('resetting');
+  }, 400);
+  writeDelayedMessage('You\'re not listening...', 2000);
+  let restartDelay = 10*1000;
   if (game.meta.resets <= 1) {
-    writeDelayedMessage('I\'m telling you a story.', 500); // TODO: set for release, 6000?
+    writeDelayedMessage('I\'m telling you a story.', 6000);
   } else {
     restartDelay = 6000;
   }

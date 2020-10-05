@@ -11,6 +11,8 @@ const FOOTSTEP_FREQUENCY = 5;
 // The map will scroll if the player is within this distance from the viewport edge
 const MAP_SCROLL_PADDING = 100;
 
+const MESSAGE_CHAR_DELAY = 35;
+
 const FADE_IN_DURATION = 100;
 const FADE_OUT_DURATION = 150;
 // objects don't start fading out until hitting this delay
