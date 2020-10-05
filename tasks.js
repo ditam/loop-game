@@ -301,6 +301,7 @@
         const targets = gameState.objects.filter((obj) => obj.class==='river-scenery');
         targets.forEach(game.utils.fadeInObject);
       },
+      endMessage: 'He just walked around until the developer fixed the missing scenes.',
       startMessage: 'From the bridge, he took a long look at the riverside.',
       setData: function(player, gameState) {
         currentTask = {
