@@ -1,8 +1,7 @@
+let writingSound;
+let soundsOn = false;
 
 $(document).ready(function() {
-
-  let soundsOn = false;
-
   // initialize audio assets
   const songs = [
     new Audio('assets/song01.mp3'),
@@ -10,12 +9,19 @@ $(document).ready(function() {
     new Audio('assets/song03.mp3')
   ];
 
+  writingSound = new Audio('assets/writing-effect.mp3');
+
   songs.forEach(function(song) {
     song.addEventListener('ended', function() {
       this.currentTime = 0;
       playNextSong();
     }, false);
   });
+
+  writingSound.addEventListener('ended', function() {
+    this.currentTime = 0;
+    this.play();
+  }, false);
 
   function playNextSong() {
     // TODO: add new songs as stages are unlocked
@@ -30,6 +36,7 @@ $(document).ready(function() {
     } else {
       $('#mute-button img').attr('src', 'assets/icon-sound-muted.png');
       songs.forEach((song) => song.pause());
+      writingSound.pause();
     }
   });
 

@@ -51,6 +51,10 @@ function writeMessage(msg) {
   const target = $('#text-overlay');
   const textSizer = $('#text-measure-helper');
 
+  if (soundsOn) {
+    writingSound.play();
+  }
+
   if (timeout) {
     // TODO: make this more robust against race conditions...
     console.warn('Previous timeout is active! target state:', target.text());
@@ -72,7 +76,7 @@ function writeMessage(msg) {
       i++;
       timeout = setTimeout(_writeChar, MESSAGE_CHAR_DELAY);
     } else {
-      console.log(`msg "${msg}" completed, clearing timeout.`);
+      writingSound.pause();
       timeout = null;
     }
   })();
