@@ -42,6 +42,20 @@ canvas {
   height: 50px;
 }
 
+#controls #mute-button {
+  float: right;
+  line-height: 50px;
+  background-color: #ccc;
+  height: 50px;
+  width: 50px;
+  margin-left: 12px;
+  cursor: pointer;
+}
+
+#controls #mute-button img {
+  padding: 10px;
+}
+
 #controls #mobile-controls-button {
   float: right;
   background-color: #ccc;
@@ -52,7 +66,8 @@ canvas {
   cursor: pointer;
 }
 
-#controls #mobile-controls-button:hover, #controls #mobile-controls-button:active {
+#controls #mobile-controls-button:hover, #controls #mobile-controls-button:active,
+#controls #mute-button:hover, #controls #mute-button:active {
   background-color: #caa;
 }
 

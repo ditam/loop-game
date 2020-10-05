@@ -1,5 +1,38 @@
 
 $(document).ready(function() {
+
+  let soundsOn = false;
+
+  // initialize audio assets
+  const songs = [
+    new Audio('assets/song01.mp3'),
+    new Audio('assets/song02.mp3'),
+    new Audio('assets/song03.mp3')
+  ];
+
+  songs.forEach(function(song) {
+    song.addEventListener('ended', function() {
+      this.currentTime = 0;
+      playNextSong();
+    }, false);
+  });
+
+  function playNextSong() {
+    // TODO: add new songs as stages are unlocked
+    songs[0].play();
+  }
+
+  $('#mute-button').click(function() {
+    soundsOn = !soundsOn;
+    if (soundsOn) {
+      $('#mute-button img').attr('src', 'assets/icon-sound.png');
+      playNextSong();
+    } else {
+      $('#mute-button img').attr('src', 'assets/icon-sound-muted.png');
+      songs.forEach((song) => song.pause());
+    }
+  });
+
   console.log('Hello Loop Game!');
 
   const canvas = document.getElementById('main-canvas');
