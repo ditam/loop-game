@@ -13,6 +13,21 @@ const MAP_SCROLL_PADDING = 100;
 
 const MESSAGE_CHAR_DELAY = 35;
 
+const STAGE_BOUNDS = [
+  {
+    x: WIDTH,
+    y: HEIGHT
+  },
+  {
+    x: 1400,
+    y: 650
+  },
+  {
+    x: 1800,
+    y: 1300
+  }
+];
+
 const FADE_IN_DURATION = 100;
 const FADE_OUT_DURATION = 150;
 // objects don't start fading out until hitting this delay

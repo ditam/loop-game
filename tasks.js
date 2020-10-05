@@ -172,10 +172,7 @@
       },
       endEffect: function(gameState) {
         game.utils.swapObjects('fence-broken', 'fence-mended');
-        gameState.mapBounds = {
-          x: 1400,
-          y: 500
-        };
+        gameState.mapBounds = STAGE_BOUNDS[1];
         gameState.choices++;
       },
       setData: function(player, gameState) {
