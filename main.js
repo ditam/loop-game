@@ -7,108 +7,6 @@ const assetURL2ImageCache = {};
 const bgImg = new Image();
 bgImg.src = 'assets/mapBackground.png';
 
-const game = {
-  state: {
-    currentTaskIndex: 0,
-    hasTask: false,
-    mapBounds: {
-      //x: 800,
-      //y: 500
-      x: 1500,
-      y: 700
-    },
-    // objects is a coordinate-ordered list of map elements,
-    // so that no z-index needs to be considered when iterating and rendering
-    objects: [],
-    player: {
-      x: 650,
-      y: 110
-    },
-    resetting: false,
-    viewport: {
-      x: 0,
-      y: 0
-    }
-  },
-  meta: {
-    resets: 0
-  }
-  // NB: other files also attach to the game object
-};
-
-// add debug placeholder objects
-const el01 = {
-  x: 280,
-  y: 111,
-  isHidden: true,
-  assetURL: 'assets/watchtower.png',
-  width: 128,
-  height: 128
-};
-const el02 = {
-  id: 'red-x',
-  x: 200,
-  y: 300,
-  isHidden: true,
-  assetURL: 'assets/house.png',
-  width: 70,
-  height: 70
-};
-const el03 = {
-  x: 680,
-  y: 450,
-  isHidden: true,
-  assetURL: 'assets/tree-group.png',
-  width: 70,
-  height: 70
-};
-const el04 = {
-  x: 700,
-  y: 430,
-  isHidden: true,
-  assetURL: 'assets/tree-group.png',
-  width: 70,
-  height: 70
-};
-const el05 = {
-  x: 400,
-  y: 430,
-  isHidden: true,
-  assetURL: 'assets/tree-group.png',
-  width: 50,
-  height: 50
-};
-const el06 = {
-  x: 500,
-  y: 320,
-  isHidden: true,
-  assetURL: 'assets/tree-large.png',
-  width: 50,
-  height: 50
-};
-createImageRefFromObjAsset(el01);
-createImageRefFromObjAsset(el02);
-createImageRefFromObjAsset(el03);
-createImageRefFromObjAsset(el04);
-createImageRefFromObjAsset(el05);
-createImageRefFromObjAsset(el06);
-game.state.objects.push(el01);
-game.state.objects.push(el02);
-game.state.objects.push(el03);
-game.state.objects.push(el04);
-game.state.objects.push(el05);
-game.state.objects.push(el06);
-
-// DEBUG: generate gridmarks
-// for (let i=0; i<25; i++) {
-//   for (let j=0; j<10; j++) {
-//     game.state.objects.push({
-//       x: i*100,
-//       y: j*100
-//     });
-//   }
-// }
-
 // sort objects by coordinates (so that z-index appearance is correct when drawn in order)
 // re-sort every time a new element is added, or make sure it is inserted at the right place!
 function sortObjects() {
@@ -124,6 +22,9 @@ function sortObjects() {
   });
 }
 sortObjects();
+
+// annotate each object with an image element of the obj asset
+game.state.objects.forEach((obj) => createImageRefFromObjAsset(obj));
 
 // save initial state (will reset to this)
 game._initialState = clone(game.state);
@@ -291,7 +192,7 @@ function resetInitialState() {
   game.meta.resets++;
   game.state = clone(game._initialState);
   // clone does not carry the HTMLImageElements, so we re-add them
-  // TODO: there should be a more efficient way of doing this - update clone?
+  // (assetURL2ImageCache persists, so this should not be expensive)
   game.state.objects.forEach(function(obj) {
     if (obj.assetURL) {
       createImageRefFromObjAsset(obj);
