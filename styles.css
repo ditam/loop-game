@@ -1,5 +1,6 @@
 body {
   background-color: #eee;
+  user-select: none;
 }
 
 canvas {
@@ -13,7 +14,6 @@ canvas {
 }
 
 .text-overlay {
-  user-select: none;
   position: absolute;
   top: 350px;
   /* left position is set for every msg from js */
@@ -62,7 +62,6 @@ canvas {
   left: 0;
   width: 240px;
   height: 240px;
-  user-select: none;
   display: none;
 }
 
