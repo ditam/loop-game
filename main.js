@@ -89,6 +89,7 @@ game._initialState = clone(game.state);
 console.log('saved initial state:', game._initialState);
 
 function createImageRefFromObjAsset(obj) {
+  // TODO: create an assetUrl -> HTMLImageElement cache
   if (obj.assetURL) {
     const image = $('<img>').attr('src', obj.assetURL);
     obj.image = image.get(0);
@@ -214,6 +215,32 @@ function startTask() {
     writeMessage(currentTask.startMessage);
   }
   console.log(`Starting task #${game.state.currentTaskIndex}`);
+}
+
+function processCompletedTask() {
+  console.log('task completed!');
+  const currentTask = game.tasks[game.state.currentTaskIndex];
+
+  // write task end-message
+  if (currentTask.endMessage) {
+    writeMessage(currentTask.endMessage);
+  }
+
+  // apply task effects
+  if (currentTask.endEffect) {
+    currentTask.endEffect(game.state);
+  }
+
+  // cycle to next task with a timeout
+  if (game.state.currentTaskIndex === game.tasks.length -1) {
+    console.log('---no more tasks---');
+  } else {
+    game.state.currentTaskIndex = game.state.currentTaskIndex + 1;
+    // TODO: allow tasks to specify delay
+    setTimeout(startTask, 1000);
+  }
+
+  game.state.hasTask = false; // startTask will set it to true, see timeout above
 }
 
 function resetInitialState() {
@@ -348,27 +375,7 @@ function draw(timestamp) {
     if (taskState.failed) {
       resetGame();
     } else if (taskState.completed) {
-      console.log('task completed!');
-      game.state.hasTask = false; // startTask will set it to true
-
-      // write end-message if task has one
-      if (game.tasks[game.state.currentTaskIndex].endMessage) {
-        writeMessage(game.tasks[game.state.currentTaskIndex].endMessage);
-      }
-
-      // apply task effects
-      if (game.tasks[game.state.currentTaskIndex].endEffect) {
-        game.tasks[game.state.currentTaskIndex].endEffect(game.state);
-      }
-
-      // cycle to next task with a timeout
-      if (game.state.currentTaskIndex === game.tasks.length -1) {
-        console.log('---no more tasks---');
-      } else {
-        game.state.currentTaskIndex = game.state.currentTaskIndex + 1;
-        // TODO: allow tasks to specify delay
-        setTimeout(startTask, 1000);
-      }
+      processCompletedTask();
     }
   }
 
