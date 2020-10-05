@@ -21,3 +21,6 @@ const FADE_OUT_DELAY = 20;
 const ACTIVITY_RADIUS = 40;
 
 const OBJECT_DEFAULT_SIZE = 10;
+
+// objects within this radius from the player are discovered
+const OBJECT_DISCOVERY_RANGE = 150;

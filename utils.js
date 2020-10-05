@@ -7,6 +7,21 @@ game.utils = {
     return sum/array.length;
   },
 
+  discoverObjectsInRange: function(x, y, objects) {
+    // TODO: use viewport or some space partitioning to make this more performant? Will do for now...
+    objects.forEach(function(obj) {
+      if (obj.isHidden && game.utils.dist(x, y, obj.x, obj.y) < OBJECT_DISCOVERY_RANGE) {
+        game.utils.fadeInObject(obj);
+      }
+    });
+  },
+
+  dist: function(x0, y0, x1, y1) {
+    return Math.sqrt(
+      (x0-x1)*(x0-x1) + (y0-y1)*(y0-y1)
+    );
+  },
+
   fadeInObject: function(obj) {
     if (!obj.isHidden) {
       console.warn('Object is already displayed or fading in:', obj);

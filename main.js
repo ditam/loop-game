@@ -33,6 +33,7 @@ const game = {
 const el01 = {
   x: 111,
   y: 111,
+  isHidden: true,
   assetURL: 'assets/test01.png'
 };
 const el02 = {
@@ -47,6 +48,23 @@ const el02 = {
 const el03 = {
   x: 660,
   y: 450,
+  isHidden: true,
+  assetURL: 'assets/test03.png',
+  width: 20,
+  height: 20
+};
+const el04 = {
+  x: 700,
+  y: 350,
+  isHidden: true,
+  assetURL: 'assets/test03.png',
+  width: 20,
+  height: 20
+};
+const el05 = {
+  x: 400,
+  y: 430,
+  isHidden: true,
   assetURL: 'assets/test03.png',
   width: 20,
   height: 20
@@ -54,9 +72,13 @@ const el03 = {
 createImageRefFromObjAsset(el01);
 createImageRefFromObjAsset(el02);
 createImageRefFromObjAsset(el03);
+createImageRefFromObjAsset(el04);
+createImageRefFromObjAsset(el05);
 game.state.objects.push(el01);
 game.state.objects.push(el02);
 game.state.objects.push(el03);
+game.state.objects.push(el04);
+game.state.objects.push(el05);
 
 // generate debug gridmarks
 for (let i=0; i<25; i++) {
@@ -367,6 +389,7 @@ function draw(timestamp) {
     if (keysPressed.left && keysPressed.up) angle = 315 * Math.PI / 180;
 
     addFootstep(player.x, player.y, angle);
+    game.utils.discoverObjectsInRange(player.x, player.y, game.state.objects);
   }
 
   // check if movement satisfies current task
@@ -458,10 +481,12 @@ function draw(timestamp) {
 function startDay() {
   writeDelayedMessage('It was a day just like any other.', 1000);
 
+  // DEBUG mode: do not start task to allow free roaming
+  /*
   setTimeout(
     function() {
       // TODO: only start task after msg is fully shown
-      startTask();
+      // startTask();
     },
     5000
   );
@@ -469,4 +494,5 @@ function startDay() {
   // TODO: remove, demo only
   const redX = game.utils.findObjectByID('red-x', game.state.objects);
   setTimeout(function() {game.utils.fadeInObject(redX)}, 3000);
+  */
 }
