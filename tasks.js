@@ -4,7 +4,7 @@
 
   game.tasks = [
     {
-      id: 'go-to-x',
+      id: 'go-to-well',
       startMessage: 'He went straight to the well.',
       endMessage: null,
       startEffect: function(gameState) {
@@ -52,9 +52,87 @@
       }
     },
     {
-      id: 'stay-here',
+      id: 'go-to-house',
+      startMessage: 'With the water he walked carefully back to the house.',
+      endMessage: null,
+      startEffect: function(gameState) {
+        const well = game.utils.findObjectByID('well', gameState.objects);
+        game.utils.fadeInObject(well);
+      },
+      setData: function(player, gameState) {
+        // TODO: refactor: generic straight to target type fn
+        const home = game.utils.findObjectByID('home', gameState.objects);
+        currentTask = {
+          target: {
+            x: home.x,
+            y: home.y
+          },
+          startPosition: {
+            x: player.x,
+            y: player.y
+          }
+        };
+        currentTask.acceptableBounds = {
+          x0: Math.min(currentTask.target.x, currentTask.startPosition.x) - 50,
+          y0: Math.min(currentTask.target.y, currentTask.startPosition.y) - 50,
+          x1: Math.max(currentTask.target.x, currentTask.startPosition.x) + 50,
+          y1: Math.max(currentTask.target.y, currentTask.startPosition.y) + 50
+        }
+      },
+      checker: function(playerCoords) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        const bounds = currentTask.acceptableBounds;
+        if (
+          playerCoords.x < bounds.x0 || playerCoords.y < bounds.y0 ||
+          playerCoords.x > bounds.x1 || playerCoords.y > bounds.y1
+        ) {
+          taskState.failed = true;
+        }
+
+        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+
+        return taskState;
+      }
+    },
+    {
+      id: 'free-roam-to-fire',
+      startMessage: 'He has gotten cold, so he went to set the fire.',
+      startEffect: function(gameState) {
+        const fireOut = game.utils.findObjectByID('fire-out', gameState.objects);
+        game.utils.fadeInObject(fireOut);
+      },
+      endEffect: function(gameState) {
+        game.utils.swapObjects('fire-out', 'fire');
+      },
+      setData: function(player, gameState) {
+        const target = game.utils.findObjectByID('fire', gameState.objects);
+        currentTask = {
+          target: {
+            x: target.x,
+            y: target.y
+          },
+          startTime: gameState.lastDrawTime
+        };
+      },
+      checker: function(playerCoords, gameState) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+        taskState.failed = gameState.lastDrawTime - currentTask.startTime > 60*1000;
+
+        return taskState;
+      }
+    },
+    {
+      id: 'stay-at-fire',
       startMessage: 'And he just stood there for a while.',
-      endMessage: 'Indeed.',
       setData: function(player, gameState) {
         currentTask = {
           startPosition: {
@@ -75,7 +153,9 @@
           playerCoords.x !== currentTask.startPosition.x ||
           playerCoords.y !== currentTask.startPosition.y
         ) {
-          taskState.failed = true;
+          if (gameState.lastDrawTime - currentTask.startTime < 500) {
+            taskState.failed = true;
+          }
         }
 
         taskState.completed = gameState.lastDrawTime - currentTask.startTime > 5000;
@@ -84,10 +164,14 @@
       }
     },
     {
-      id: 'free-roam-to-green',
-      startMessage: 'And he went to the green thing.',
-      endMessage: 'Which expanded his map!',
+      id: 'mend-fence-freeroam',
+      startMessage: 'He decided to mend the broken fence by his house.',
+      startEffect: function(gameState) {
+        const fenceBroken = game.utils.findObjectByID('fence-broken', gameState.objects);
+        game.utils.fadeInObject(fenceBroken);
+      },
       endEffect: function(gameState) {
+        game.utils.swapObjects('fence-broken', 'fence-mended');
         gameState.mapBounds = {
           x: 1400,
           y: 500
@@ -95,21 +179,60 @@
         gameState.choices++;
       },
       setData: function(player, gameState) {
+        const target = game.utils.findObjectByID('fence-broken', gameState.objects);
         currentTask = {
           target: {
-            x: 660,
-            y: 450
+            x: target.x,
+            y: target.y
           },
           startTime: gameState.lastDrawTime
         };
       },
-      checker: function(playerCoords) {
+      checker: function(playerCoords, gameState) {
         const taskState = {
           completed: false,
           failed: false
         };
 
         taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+        taskState.failed = gameState.lastDrawTime - currentTask.startTime > 60*1000;
+
+        return taskState;
+      }
+    },
+    {
+      id: 'go-home-end-stage',
+      startMessage: 'It was time to go home.',
+      endEffect: function(gameState) {
+        if (game.meta.resets > 10) {
+          resetGame('He didn\'t -need- to go home, of course...');
+        } else {
+          resetGame('He felt like he was missing out on something.');
+        }
+      },
+      setData: function(player, gameState) {
+        const target = game.utils.findObjectByID('home', gameState.objects);
+        currentTask = {
+          target: {
+            x: target.x,
+            y: target.y
+          },
+          startPosition: {
+            x: player.x,
+            y: player.y
+          },
+          startTime: gameState.lastDrawTime
+        };
+      },
+      checker: function(playerCoords, gameState) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+
+        taskState.failed = playerCoords.x > currentTask.startPosition.x + 50;
 
         return taskState;
       }

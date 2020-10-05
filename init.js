@@ -24,7 +24,8 @@ const game = {
     }
   },
   meta: {
-    resets: 0
+    resets: 0,
+    stage: 1
   }
 };
 
@@ -89,29 +90,35 @@ game.state.objects = [
     isHidden: true,
     forceHide: true, // can only be revealed explicitly, not via discovery
     assetURL: 'assets/fire.png',
-    id: 'fire-lit'
+    id: 'fire'
   },
   {
-    x: 500,
-    y: 200,
+    x: 510,
+    y: 230,
     isHidden: true,
     assetURL: 'assets/fence.png',
-    id: 'fence-broken'
+    id: 'fence',
+    width: 64,
+    height: 37
   },
   {
-    x: 550,
-    y: 200,
+    x: 560,
+    y: 230,
     isHidden: true,
     assetURL: 'assets/fence-broken.png',
-    id: 'fence-broken'
+    id: 'fence-broken',
+    width: 64,
+    height: 37
   },
   {
-    x: 550,
-    y: 200,
+    x: 560,
+    y: 230,
     isHidden: true,
     forceHide: true,
     assetURL: 'assets/fence.png',
-    id: 'fence-mended'
+    id: 'fence-mended',
+    width: 64,
+    height: 37
   },
 ];
 

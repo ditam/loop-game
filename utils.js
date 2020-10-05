@@ -35,6 +35,23 @@ game.utils = {
     obj.fadeCounter = 0;
   },
 
+  fadeOutObject: function(obj) {
+    if (obj.isFadingOut) {
+      console.warn('Object is already fading out:', obj);
+      return;
+    }
+
+    obj.isFadingOut = true;
+    obj.fadeCounter = 0;
+  },
+
+  swapObjects: function(idA, idB) {
+    const objA = game.utils.findObjectByID(idA, game.state.objects);
+    game.utils.fadeOutObject(objA);
+    const objB = game.utils.findObjectByID(idB, game.state.objects);
+    game.utils.fadeInObject(objB);
+  },
+
   isObjectInProximity: function(playerCoords, objectCoords) {
     const xDist = Math.abs(playerCoords.x - objectCoords.x);
     const yDist = Math.abs(playerCoords.y - objectCoords.y);

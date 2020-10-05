@@ -72,6 +72,7 @@ function writeMessage(msg) {
       i++;
       timeout = setTimeout(_writeChar, MESSAGE_CHAR_DELAY);
     } else {
+      console.log(`msg "${msg}" completed, clearing timeout.`);
       timeout = null;
     }
   })();
@@ -153,7 +154,11 @@ function addFootstep(x, y, angle) {
 }
 
 function showChoiceMarker() {
-  $('#choice-marker').fadeTo(500, 1);
+  $('#choice-marker').fadeTo(600, 1);
+}
+
+function hideChoiceMarker() {
+  $('#choice-marker').fadeTo(300, 0);
 }
 
 function checkCoordsForCurrentTask(coords) {
@@ -204,6 +209,11 @@ function processCompletedTask() {
   game.state.hasTask = false; // startTask will set it to true, see timeout above
 }
 
+function processChoice() {
+  game.state.hasTask = false;
+  writeMessage('But he decided to do something different.');
+}
+
 function resetInitialState() {
   game.meta.resets++;
   game.state = clone(game._initialState);
@@ -216,7 +226,7 @@ function resetInitialState() {
   });
 }
 
-function resetGame() {
+function resetGame(customMessage) {
   // show reset-loop message
   game.state.resetting = true;
   // we immediately start fading, but delay the text removal for a bit
@@ -224,9 +234,11 @@ function resetGame() {
   setTimeout(function() {
     $('.text-overlay').empty().addClass('resetting');
   }, 400);
-  writeDelayedMessage('You\'re not listening...', 2000);
+  hideChoiceMarker();
+
+  writeDelayedMessage(customMessage || 'You\'re not listening...', 2000);
   let restartDelay = 10*1000;
-  if (game.meta.resets <= 1) {
+  if (!customMessage && game.meta.resets <= 1) {
     writeDelayedMessage('I\'m telling you a story.', 6000);
   } else {
     restartDelay = 6000;
@@ -346,7 +358,11 @@ function draw(timestamp) {
   if (game.state.hasTask) {
     const taskState = checkCoordsForCurrentTask({x: player.x, y: player.y});
     if (taskState.failed) {
-      resetGame();
+      if (game.state.choices > 0) {
+        processChoice();
+      } else {
+        resetGame();
+      }
     } else if (taskState.completed) {
       processCompletedTask();
     }
