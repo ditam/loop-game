@@ -4,6 +4,8 @@ function clone(o) {
 
 // a cache of HTMLImageElements, so that objects with the same asset use the same img object
 const assetURL2ImageCache = {};
+const bgImg = new Image();
+bgImg.src = 'assets/mapBackground.png';
 
 const game = {
   state: {
@@ -313,6 +315,7 @@ function resetGame() {
 }
 
 let drawCount = 0;
+let bgPattern = null;
 function draw(timestamp) {
   // during resets drawing is paused
   if (game.state.resetting) {
@@ -327,8 +330,13 @@ function draw(timestamp) {
   }
 
   // draw background
-  ctx.fillStyle = 'linen';
-  ctx.fillRect(0, 0, WIDTH, HEIGHT);
+  if (!bgPattern) {
+    bgPattern = ctx.createPattern(bgImg, 'repeat');
+  }
+  ctx.save();
+  ctx.fillStyle = bgPattern;
+  ctx.fillRect(0, 0, 2000, 2000);
+  ctx.restore();
 
   // shorthands
   const player = game.state.player;
