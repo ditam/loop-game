@@ -66,6 +66,12 @@ game.state.objects = [
     id: 'well'
   },
   {
+    x: 110,
+    y: 90,
+    isHidden: true,
+    assetURL: 'assets/tree2.png'
+  },
+  {
     x: 70,
     y: 320,
     isHidden: true,
@@ -120,6 +126,33 @@ game.state.objects = [
     width: 64,
     height: 37
   },
+  {
+    x: 680,
+    y: 120,
+    isHidden: true,
+    assetURL: 'assets/tree2.png',
+  },
+  {
+    x: 780,
+    y: 50,
+    isHidden: true,
+    assetURL: 'assets/tree2.png',
+  },
+  {
+    x: 530,
+    y: 460,
+    isHidden: true,
+    assetURL: 'assets/tree2.png',
+  },
+  {
+    x: 780,
+    y: 440,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png',
+  },
+
+  //          -------      STAGE 2      -------
+
   {
     x: 1060,
     y: 150,
