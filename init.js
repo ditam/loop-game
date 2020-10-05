@@ -2,6 +2,7 @@
 /* game is a shared global between all js code -> this file should be loaded first. */
 const game = {
   state: {
+    choices: 0,
     currentTaskIndex: 0,
     hasTask: false,
     mapBounds: {

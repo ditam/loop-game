@@ -87,6 +87,7 @@
           x: 1400,
           y: 500
         };
+        gameState.choices++;
       },
       setData: function(player, time) {
         currentTask = {

@@ -162,6 +162,10 @@ function startTask() {
   console.log(`Starting task #${game.state.currentTaskIndex}`);
 }
 
+function showChoiceMarker() {
+  $('#choice-marker').fadeTo(500, 1);
+}
+
 function processCompletedTask() {
   console.log('task completed!');
   const currentTask = game.tasks[game.state.currentTaskIndex];
@@ -173,7 +177,11 @@ function processCompletedTask() {
 
   // apply task effects
   if (currentTask.endEffect) {
+    const choicesBefore = game.state.choices;
     currentTask.endEffect(game.state);
+    if (game.state.choices > choicesBefore) {
+      showChoiceMarker();
+    }
   }
 
   // cycle to next task with a timeout
@@ -412,17 +420,13 @@ function startDay() {
   writeDelayedMessage('It was a day just like any other.', 1000);
 
   // DEBUG mode: do not start task to allow free roaming
-  /*
+
   setTimeout(
     function() {
       // TODO: only start task after msg is fully shown
-      // startTask();
+      startTask();
     },
     5000
   );
 
-  // TODO: remove, demo only
-  const redX = game.utils.findObjectByID('red-x', game.state.objects);
-  setTimeout(function() {game.utils.fadeInObject(redX)}, 3000);
-  */
 }

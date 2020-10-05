@@ -13,6 +13,17 @@ canvas {
   /* opacity controlled from js */
 }
 
+#choice-marker {
+  position: absolute;
+  top: 15px;
+  left: 735px;
+  width: 45px;
+  height: 10px;
+  border: 1px solid #457545;
+  opacity: 0;
+  background: linear-gradient(to right, #8BC34A, #e2ffe6);
+}
+
 .text-overlay {
   position: absolute;
   top: 350px;
