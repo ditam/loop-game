@@ -12,8 +12,10 @@ const game = {
     currentTaskIndex: 0,
     hasTask: false,
     mapBounds: {
-      x: 800,
-      y: 500
+      //x: 800,
+      //y: 500
+      x: 1500,
+      y: 700
     },
     // objects is a coordinate-ordered list of map elements,
     // so that no z-index needs to be considered when iterating and rendering
@@ -36,54 +38,66 @@ const game = {
 
 // add debug placeholder objects
 const el01 = {
-  x: 111,
+  x: 280,
   y: 111,
   isHidden: true,
-  assetURL: 'assets/test01.png'
+  assetURL: 'assets/watchtower.png',
+  width: 128,
+  height: 128
 };
 const el02 = {
   id: 'red-x',
   x: 200,
   y: 300,
   isHidden: true,
-  assetURL: 'assets/test02.png',
-  width: 30,
-  height: 30
+  assetURL: 'assets/house.png',
+  width: 70,
+  height: 70
 };
 const el03 = {
   x: 660,
   y: 450,
   isHidden: true,
-  assetURL: 'assets/test03.png',
-  width: 20,
-  height: 20
+  assetURL: 'assets/tree-group.png',
+  width: 70,
+  height: 70
 };
 const el04 = {
   x: 700,
   y: 350,
   isHidden: true,
-  assetURL: 'assets/test03.png',
-  width: 20,
-  height: 20
+  assetURL: 'assets/tree-group.png',
+  width: 70,
+  height: 70
 };
 const el05 = {
   x: 400,
   y: 430,
   isHidden: true,
-  assetURL: 'assets/test03.png',
-  width: 20,
-  height: 20
+  assetURL: 'assets/tree-group.png',
+  width: 50,
+  height: 50
+};
+const el06 = {
+  x: 500,
+  y: 320,
+  isHidden: true,
+  assetURL: 'assets/tree-large.png',
+  width: 50,
+  height: 50
 };
 createImageRefFromObjAsset(el01);
 createImageRefFromObjAsset(el02);
 createImageRefFromObjAsset(el03);
 createImageRefFromObjAsset(el04);
 createImageRefFromObjAsset(el05);
+createImageRefFromObjAsset(el06);
 game.state.objects.push(el01);
 game.state.objects.push(el02);
 game.state.objects.push(el03);
 game.state.objects.push(el04);
 game.state.objects.push(el05);
+game.state.objects.push(el06);
 
 // DEBUG: generate gridmarks
 // for (let i=0; i<25; i++) {
@@ -329,19 +343,20 @@ function draw(timestamp) {
     lastDrawTime = timestamp;
   }
 
+  // shorthands
+  const player = game.state.player;
+  const viewport = game.state.viewport;
+  const mapBounds = game.state.mapBounds;
+
   // draw background
   if (!bgPattern) {
     bgPattern = ctx.createPattern(bgImg, 'repeat');
   }
   ctx.save();
   ctx.fillStyle = bgPattern;
-  ctx.fillRect(0, 0, 2000, 2000);
+  ctx.translate(-viewport.x, -viewport.y);
+  ctx.fillRect(0 - viewport.x, 0 - viewport.y, 4096, 4096);
   ctx.restore();
-
-  // shorthands
-  const player = game.state.player;
-  const viewport = game.state.viewport;
-  const mapBounds = game.state.mapBounds;
 
   const playerInViewport = {
     x: player.x-viewport.x,
