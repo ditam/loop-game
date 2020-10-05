@@ -234,5 +234,103 @@
         return taskState;
       }
     },
+    {
+      id: 'stage-2-start',
+      setData: function() {
+        // dummy // TODO make optional
+      },
+      checker: function(playerCoords, gameState) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        taskState.completed = playerCoords.x > 900 && playerCoords.y < 270;
+
+        return taskState;
+      }
+    },
+    {
+      id: 'stage-2-bridge',
+      startEffect: function(gameState) {
+        const target = game.utils.findObjectByID('bridge', gameState.objects);
+        game.utils.fadeInObject(target);
+      },
+      startMessage: 'He was happy to see the old bridge, and headed straight for it.',
+      setData: function(player, gameState) {
+        const target = game.utils.findObjectByID('bridge', gameState.objects);
+        currentTask = {
+          target: {
+            x: target.x,
+            y: target.y
+          },
+          startPosition: {
+            x: player.x,
+            y: player.y
+          }
+        };
+        currentTask.acceptableBounds = {
+          x0: Math.min(currentTask.target.x, currentTask.startPosition.x) - 50,
+          y0: Math.min(currentTask.target.y, currentTask.startPosition.y) - 50,
+          x1: Math.max(currentTask.target.x, currentTask.startPosition.x) + 50,
+          y1: Math.max(currentTask.target.y, currentTask.startPosition.y) + 50
+        }
+      },
+      checker: function(playerCoords) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        const bounds = currentTask.acceptableBounds;
+        if (
+          playerCoords.x < bounds.x0 || playerCoords.y < bounds.y0 ||
+          playerCoords.x > bounds.x1 || playerCoords.y > bounds.y1
+        ) {
+          taskState.failed = true;
+        }
+
+        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+
+        return taskState;
+      }
+    },
+    {
+      id: 'stage-2-stay-at-bridge',
+      startEffect: function(gameState) {
+        const targets = gameState.objects.filter((obj) => obj.class==='river-scenery');
+        targets.forEach(game.utils.fadeInObject);
+      },
+      startMessage: 'From the bridge, he took a long look at the riverside.',
+      setData: function(player, gameState) {
+        currentTask = {
+          startPosition: {
+            x: player.x,
+            y: player.y
+          },
+          startTime: gameState.lastDrawTime
+        };
+      },
+      checker: function(playerCoords, gameState) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        const bounds = currentTask.acceptableBounds;
+        if (
+          playerCoords.x !== currentTask.startPosition.x ||
+          playerCoords.y !== currentTask.startPosition.y
+        ) {
+          if (gameState.lastDrawTime - currentTask.startTime > 300) {
+            taskState.failed = true;
+          }
+        }
+
+        taskState.completed = gameState.lastDrawTime - currentTask.startTime > 6000;
+
+        return taskState;
+      }
+    },
   ];
 })();

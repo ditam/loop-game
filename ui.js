@@ -47,8 +47,6 @@ $(document).ready(function() {
     }
   });
 
-  console.log('Hello Loop Game!');
-
   const canvas = document.getElementById('main-canvas');
   $(canvas).attr('height', HEIGHT);
   $(canvas).attr('width', WIDTH);

@@ -120,6 +120,155 @@ game.state.objects = [
     width: 64,
     height: 37
   },
+  {
+    x: 1060,
+    y: 150,
+    isHidden: true,
+    assetURL: 'assets/bridge-long.png',
+    id: 'bridge',
+    width: 185,
+    height: 70
+  },
+  {
+    x: 1060,
+    y: 0,
+    isHidden: true,
+    assetURL: 'assets/river-bendy.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 64,
+    isHidden: true,
+    assetURL: 'assets/river-bendy.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 128,
+    isHidden: true,
+    assetURL: 'assets/river-bendy.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 192,
+    isHidden: true,
+    assetURL: 'assets/river-straight.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 256,
+    isHidden: true,
+    assetURL: 'assets/river-bendy.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 320,
+    isHidden: true,
+    assetURL: 'assets/river-bendy.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 384,
+    isHidden: true,
+    assetURL: 'assets/river-bendy.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 448,
+    isHidden: true,
+    assetURL: 'assets/river-straight.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 512,
+    isHidden: true,
+    assetURL: 'assets/river-bendy.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1060,
+    y: 576,
+    isHidden: true,
+    assetURL: 'assets/river-straight.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1020,
+    y: 460,
+    isHidden: true,
+    assetURL: 'assets/water-mill.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 990,
+    y: 400,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 960,
+    y: 470,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1110,
+    y: 70,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1110,
+    y: 360,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1100,
+    y: 400,
+    isHidden: true,
+    assetURL: 'assets/tree2.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1100,
+    y: 120,
+    isHidden: true,
+    assetURL: 'assets/tree2.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 960,
+    y: 30,
+    isHidden: true,
+    assetURL: 'assets/tree1.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1030,
+    y: 250,
+    isHidden: true,
+    assetURL: 'assets/tree3.png',
+    class: 'river-scenery'
+  },
+  {
+    x: 1130,
+    y: 450,
+    isHidden: true,
+    assetURL: 'assets/tree3.png',
+    class: 'river-scenery'
+  },
 ];
 
 // DEBUG: generate gridmarks

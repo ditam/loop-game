@@ -9,7 +9,7 @@ const PLAYER_SPEED = 3;
 const FOOTSTEP_FREQUENCY = 5;
 
 // The map will scroll if the player is within this distance from the viewport edge
-const MAP_SCROLL_PADDING = 100;
+const MAP_SCROLL_PADDING = 150;
 
 const MESSAGE_CHAR_DELAY = 35;
 

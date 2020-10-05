@@ -218,6 +218,9 @@ function processChoice() {
   game.state.hasTask = false;
   writeMessage('But he decided to do something different.');
   game.meta.stage++;
+
+  game.state.currentTaskIndex = game.state.currentTaskIndex + 1;
+  setTimeout(startTask, 500);
 }
 
 function resetInitialState() {
@@ -462,6 +465,15 @@ function startDay() {
       startTask();
     },
     5000
+  );
+
+  // debug: freeroam
+  setTimeout(
+    function() {
+      // TODO remove debug freeroam
+      //game.state.mapBounds = {x: 1600, y: 600};
+    },
+    500
   );
 
 }
