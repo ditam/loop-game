@@ -217,6 +217,7 @@ function processChoice() {
   hideChoiceMarker();
   game.state.hasTask = false;
   writeMessage('But he decided to do something different.');
+  game.meta.stage++;
 }
 
 function resetInitialState() {

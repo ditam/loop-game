@@ -23,9 +23,16 @@ $(document).ready(function() {
     this.play();
   }, false);
 
+  let currentSongIndex = 0;
   function playNextSong() {
-    // TODO: add new songs as stages are unlocked
-    songs[0].play();
+    if (currentSongIndex === 2) {
+      currentSongIndex = 1;
+    } else if (currentSongIndex === 1) {
+      currentSongIndex = 0;
+    } else {
+      currentSongIndex = game.meta.stage -1;
+    }
+    songs[currentSongIndex].play();
   }
 
   $('#mute-button').click(function() {
