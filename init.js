@@ -444,6 +444,160 @@ game.state.objects = [
     y: 1050,
     isHidden: true,
     assetURL: 'assets/flag.png',
+  },
+
+  // shoreline
+  {
+    x: 1700,
+    y: 650,
+    isHidden: false, // too large for the standard discovery logic
+    assetURL: 'assets/coast.png',
+    width: 94,
+    height: 1300
+  },
+  {
+    x: 1760,
+    y: 0,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 75,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1740,
+    y: 150,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 225,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1770,
+    y: 300,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 375,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1740,
+    y: 450,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 525,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1740,
+    y: 600,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 675,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1750,
+    y: 750,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 825,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1750,
+    y: 900,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 975,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1730,
+    y: 1050,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 1125,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1730,
+    y: 1200,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
+  },
+  {
+    x: 1760,
+    y: 1275,
+    isHidden: false,
+    assetURL: 'assets/waves.png',
+    width: 48,
+    height: 48
   }
 ];
 

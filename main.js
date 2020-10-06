@@ -354,6 +354,10 @@ function draw(timestamp) {
     }
     if (keysPressed.right) {
       player.x = Math.min(mapBounds.x, player.x + PLAYER_SPEED);
+      // clip to shoreline
+      if (player.x > 1695) {
+        player.x = 1695;
+      }
       playerInViewport.x = player.x - viewport.x;
       if (playerInViewport.x >= WIDTH - MAP_SCROLL_PADDING) {
         viewport.x = Math.min(mapBounds.x - WIDTH, viewport.x + PLAYER_SPEED);
@@ -490,16 +494,17 @@ function draw(timestamp) {
 function startDay() {
   writeDelayedMessage('It was a day just like any other.', 1000);
 
-  const DEBUG_MODE = false;
+  const DEBUG_MODE = true;
 
   if (DEBUG_MODE) {
     // free-roam
     setTimeout(
       function() {
         game.state.mapBounds = STAGE_BOUNDS[2];
-        game.state.currentTaskIndex = game.utils.getTaskIndexFromID('stage-3-tower');
-        console.log('Jumping to task: #', game.state.currentTaskIndex);
-        startTask();
+        // jump to any task with an id
+        //game.state.currentTaskIndex = game.utils.getTaskIndexFromID('stage-3-tower');
+        //console.log('Jumping to task: #', game.state.currentTaskIndex);
+        //startTask();
       },
       200
     );
