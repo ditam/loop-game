@@ -422,7 +422,7 @@
     },
     {
       id: 'stage-3-opener',
-      startMessage: 'Heading south, he saw parts of the forest he\'d never seen before',
+      startMessage: 'Heading south, he saw parts of the forest he\'d never seen before.',
       endEffect: function(gameState) {
         const target = game.utils.findObjectByID('tower', gameState.objects);
         game.utils.fadeInObject(target);
@@ -499,5 +499,83 @@
         return taskState;
       }
     },
+    {
+      id: 'stage-3-free-roam',
+      startMessage: 'From here he could see all the way to the seashore.',
+      endEffect: function(gameState) {
+        setTimeout(function() {
+          resetGame('I\'ve told you this story before.');
+        }, 17000);
+      },
+      setData: function(player, gameState) {
+        currentTask = {
+          visitedLake: false,
+          visitedBeach: false,
+          visitedLighthouse: false,
+          visitedBottomCorner: false,
+          visitedTopCorner: false,
+          pickedUpChest: false,
+          lighthouse: game.utils.findObjectByID('lighthouse', gameState.objects)
+        };
+      },
+      checker: function(player, gameState) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        const x = player.x;
+        const y = player.y;
+
+        if (!currentTask.visitedBottomCorner && x>1380 && y>1030) {
+          currentTask.visitedBottomCorner = true;
+        }
+        if (!currentTask.visitedTopCorner && x>1450 && y<220) {
+          currentTask.visitedTopCorner = true;
+        }
+        if (!currentTask.visitedLake && y>680 && y<815 && x>775 && x<1230) {
+          currentTask.visitedLake = true;
+          writeMessage('He visited the lake, but he had no interest in fishing.');
+          writeDelayedMessage('', 7000);
+        }
+        if (!currentTask.visitedBeach && x>1520) {
+          currentTask.visitedBeach = true;
+          writeMessage('The sand of the beach held his footsteps forever.');
+          writeDelayedMessage('', 7000);
+        }
+        if (!currentTask.visitedLighthouse && game.utils.isObjectInProximity(player, currentTask.lighthouse)) {
+          currentTask.visitedLighthouse = true;
+          const ships = gameState.objects.filter((obj) => obj.class==='ship');
+          ships.forEach(game.utils.fadeInObject);
+          writeMessage('From the lighthouse, he could see ships leaving the shore.');
+          writeDelayedMessage('', 7000);
+          currentTask.chest = {
+            isHidden: true,
+            assetURL: 'assets/chest.png',
+            id: 'chest'
+          }
+          if (currentTask.visitedBottomCorner) {
+            currentTask.chest.x = 1630;
+            currentTask.chest.y = 50;
+          } else {
+            currentTask.chest.x = 1630;
+            currentTask.chest.y = 1230;
+          }
+          createImageRefFromObjAsset(currentTask.chest);
+          game.state.objects.push(currentTask.chest);
+        }
+        if (currentTask.chest && game.utils.isObjectInProximity(player, currentTask.chest)) {
+          currentTask.pickedUpChest = true;
+          writeMessage('He came across a chest in the sands.');
+          writeDelayedMessage('What was in the chest, is a story for an other day...', 6000);
+          writeDelayedMessage('', 12000);
+        }
+
+        // This task can not be failed.
+        taskState.completed = currentTask.pickedUpChest;
+
+        return taskState;
+      }
+    }
   ];
 })();

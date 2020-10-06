@@ -33,6 +33,7 @@ canvas {
 
   padding: 14px;
   background-color: rgba(255, 255, 255, 0.2);
+  text-shadow: rgba(255, 255, 255, 0.5) 1px 1px 0px;
 
   font-family: 'Dancing Script', cursive;
   font-size: 35px;

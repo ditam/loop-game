@@ -25,7 +25,8 @@ game.utils = {
 
   fadeInObject: function(obj) {
     if (!obj.isHidden) {
-      console.warn('Object is already displayed or fading in:', obj);
+      // can be common once the beach is reached - ie. with footsteps
+      //console.warn('Object is already displayed or fading in:', obj);
       return;
     }
 

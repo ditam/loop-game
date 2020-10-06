@@ -500,7 +500,7 @@ function draw(timestamp) {
 function startDay() {
   writeDelayedMessage('It was a day just like any other.', 1000);
 
-  const DEBUG_MODE = true;
+  const DEBUG_MODE = false;
 
   if (DEBUG_MODE) {
     // free-roam
@@ -508,9 +508,9 @@ function startDay() {
       function() {
         game.state.mapBounds = STAGE_BOUNDS[2];
         // jump to any task with an id
-        //game.state.currentTaskIndex = game.utils.getTaskIndexFromID('stage-3-tower');
-        //console.log('Jumping to task: #', game.state.currentTaskIndex);
-        //startTask();
+        game.state.currentTaskIndex = game.utils.getTaskIndexFromID('stage-3-free-roam');
+        console.log('Jumping to task: #', game.state.currentTaskIndex);
+        startTask();
       },
       200
     );
