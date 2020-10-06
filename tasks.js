@@ -5,7 +5,7 @@
   game.tasks = [
     {
       id: 'go-to-well',
-      startMessage: 'He went straight to the well.',
+      startMessage: 'Like every morning, he went straight to the well.',
       endMessage: null,
       startEffect: function(gameState) {
         const well = game.utils.findObjectByID('well', gameState.objects);
@@ -32,7 +32,7 @@
         }
         // TODO: save times - will allow waiting tasks and speed-based checks
       },
-      checker: function(playerCoords) {
+      checker: function(player) {
         const taskState = {
           completed: false,
           failed: false
@@ -40,13 +40,13 @@
 
         const bounds = currentTask.acceptableBounds;
         if (
-          playerCoords.x < bounds.x0 || playerCoords.y < bounds.y0 ||
-          playerCoords.x > bounds.x1 || playerCoords.y > bounds.y1
+          player.x < bounds.x0 || player.y < bounds.y0 ||
+          player.x > bounds.x1 || player.y > bounds.y1
         ) {
           taskState.failed = true;
         }
 
-        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+        taskState.completed = game.utils.isObjectInProximity(player, currentTask.target);
 
         return taskState;
       }
@@ -79,7 +79,7 @@
           y1: Math.max(currentTask.target.y, currentTask.startPosition.y) + 50
         }
       },
-      checker: function(playerCoords) {
+      checker: function(player) {
         const taskState = {
           completed: false,
           failed: false
@@ -87,13 +87,13 @@
 
         const bounds = currentTask.acceptableBounds;
         if (
-          playerCoords.x < bounds.x0 || playerCoords.y < bounds.y0 ||
-          playerCoords.x > bounds.x1 || playerCoords.y > bounds.y1
+          player.x < bounds.x0 || player.y < bounds.y0 ||
+          player.x > bounds.x1 || player.y > bounds.y1
         ) {
           taskState.failed = true;
         }
 
-        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+        taskState.completed = game.utils.isObjectInProximity(player, currentTask.target);
 
         return taskState;
       }
@@ -118,13 +118,13 @@
           startTime: gameState.lastDrawTime
         };
       },
-      checker: function(playerCoords, gameState) {
+      checker: function(player, gameState) {
         const taskState = {
           completed: false,
           failed: false
         };
 
-        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+        taskState.completed = game.utils.isObjectInProximity(player, currentTask.target);
         taskState.failed = gameState.lastDrawTime - currentTask.startTime > 60*1000;
 
         return taskState;
@@ -139,21 +139,34 @@
             x: player.x,
             y: player.y
           },
-          startTime: gameState.lastDrawTime
+          startTime: gameState.lastDrawTime,
+          inGracePeriod: true
         };
       },
-      checker: function(playerCoords, gameState) {
+      checker: function(player, gameState) {
         const taskState = {
           completed: false,
           failed: false
         };
 
+        if (gameState.lastDrawTime - currentTask.startTime > (this.startMessage.length * MESSAGE_CHAR_DELAY)+300) {
+          currentTask.inGracePeriod = false;
+          currentTask.startPosition = {
+            x: player.x,
+            y: player.y
+          };
+        }
+
+        if (currentTask.inGracePeriod) {
+          return taskState;
+        }
+
         const bounds = currentTask.acceptableBounds;
         if (
-          playerCoords.x !== currentTask.startPosition.x ||
-          playerCoords.y !== currentTask.startPosition.y
+          player.x !== currentTask.startPosition.x ||
+          player.y !== currentTask.startPosition.y
         ) {
-          if (gameState.lastDrawTime - currentTask.startTime > 300) {
+          if (gameState.lastDrawTime - currentTask.startTime > gracePeriod) {
             taskState.failed = true;
           }
         }
@@ -185,13 +198,13 @@
           startTime: gameState.lastDrawTime
         };
       },
-      checker: function(playerCoords, gameState) {
+      checker: function(player, gameState) {
         const taskState = {
           completed: false,
           failed: false
         };
 
-        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+        taskState.completed = game.utils.isObjectInProximity(player, currentTask.target);
         taskState.failed = gameState.lastDrawTime - currentTask.startTime > 60*1000;
 
         return taskState;
@@ -199,7 +212,7 @@
     },
     {
       id: 'go-home-end-stage',
-      startMessage: 'It was time to go home.',
+      startMessage: 'It was time for him to go home.',
       endEffect: function(gameState) {
         if (game.meta.resets > 10) {
           resetGame('He didn\'t -need- to go home, of course...');
@@ -221,15 +234,15 @@
           startTime: gameState.lastDrawTime
         };
       },
-      checker: function(playerCoords, gameState) {
+      checker: function(player, gameState) {
         const taskState = {
           completed: false,
           failed: false
         };
 
-        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+        taskState.completed = game.utils.isObjectInProximity(player, currentTask.target);
 
-        taskState.failed = playerCoords.x > currentTask.startPosition.x + 50;
+        taskState.failed = player.x > currentTask.startPosition.x + 50;
 
         return taskState;
       }
@@ -239,13 +252,13 @@
       setData: function() {
         // dummy // TODO make optional
       },
-      checker: function(playerCoords, gameState) {
+      checker: function(player, gameState) {
         const taskState = {
           completed: false,
           failed: false
         };
 
-        taskState.completed = playerCoords.x > 850 && playerCoords.y < 270;
+        taskState.completed = player.x > 850 && player.y < 270;
 
         return taskState;
       }
@@ -278,7 +291,7 @@
           y1: Math.max(currentTask.target.y, currentTask.startPosition.y) + 50
         }
       },
-      checker: function(playerCoords) {
+      checker: function(player) {
         const taskState = {
           completed: false,
           failed: false
@@ -286,13 +299,13 @@
 
         const bounds = currentTask.acceptableBounds;
         if (
-          playerCoords.x < bounds.x0 || playerCoords.y < bounds.y0 ||
-          playerCoords.x > bounds.x1 || playerCoords.y > bounds.y1
+          player.x < bounds.x0 || player.y < bounds.y0 ||
+          player.x > bounds.x1 || player.y > bounds.y1
         ) {
           taskState.failed = true;
         }
 
-        taskState.completed = game.utils.isObjectInProximity(playerCoords, currentTask.target);
+        taskState.completed = game.utils.isObjectInProximity(player, currentTask.target);
 
         return taskState;
       }
@@ -314,16 +327,28 @@
           startTime: gameState.lastDrawTime
         };
       },
-      checker: function(playerCoords, gameState) {
+      checker: function(player, gameState) {
         const taskState = {
           completed: false,
           failed: false
         };
 
+        if (gameState.lastDrawTime - currentTask.startTime > (this.startMessage.length * MESSAGE_CHAR_DELAY)+300) {
+          currentTask.inGracePeriod = false;
+          currentTask.startPosition = {
+            x: player.x,
+            y: player.y
+          };
+        }
+
+        if (currentTask.inGracePeriod) {
+          return taskState;
+        }
+
         const bounds = currentTask.acceptableBounds;
         if (
-          playerCoords.x !== currentTask.startPosition.x ||
-          playerCoords.y !== currentTask.startPosition.y
+          player.x !== currentTask.startPosition.x ||
+          player.y !== currentTask.startPosition.y
         ) {
           if (gameState.lastDrawTime - currentTask.startTime > 300) {
             taskState.failed = true;
