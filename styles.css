@@ -38,6 +38,10 @@ canvas {
   font-size: 35px;
 }
 
+.text-overlay:empty {
+  padding: 0;
+}
+
 .text-overlay.resetting {
   color: white;
   background-color: black;

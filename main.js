@@ -190,6 +190,8 @@ function processCompletedTask() {
   // write task end-message
   if (currentTask.endMessage) {
     writeMessage(currentTask.endMessage);
+  } else {
+    writeMessage('');
   }
 
   // apply task effects
