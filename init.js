@@ -598,6 +598,99 @@ game.state.objects = [
     assetURL: 'assets/waves.png',
     width: 48,
     height: 48
+  },
+  // palm trees on beach
+  {
+    x: 1430,
+    y: 150,
+    isHidden: true,
+    assetURL: 'assets/palm-large.png'
+  },
+  {
+    x: 1530,
+    y: 275,
+    isHidden: true,
+    assetURL: 'assets/palm.png'
+  },
+  {
+    x: 1500,
+    y: 400,
+    isHidden: true,
+    assetURL: 'assets/palm.png'
+  },
+  {
+    x: 1650,
+    y: 475,
+    isHidden: true,
+    assetURL: 'assets/palm.png'
+  },
+  {
+    x: 1590,
+    y: 660,
+    isHidden: true,
+    assetURL: 'assets/palm-large.png'
+  },
+  {
+    x: 1650,
+    y: 1000,
+    isHidden: true,
+    assetURL: 'assets/palm-large.png'
+  },
+  {
+    x: 1600,
+    y: 1100,
+    isHidden: true,
+    assetURL: 'assets/palm.png'
+  },
+  {
+    x: 1680,
+    y: 820,
+    isHidden: true,
+    assetURL: 'assets/lighthouse.png',
+    width: 128,
+    height: 128,
+    id: 'lighthouse'
+  },
+  {
+    x: 1760,
+    y: 900,
+    isHidden: true,
+    forceHide: true,
+    assetURL: 'assets/ship.png',
+    class: 'ship'
+  },
+  {
+    x: 1750,
+    y: 690,
+    isHidden: true,
+    forceHide: true,
+    assetURL: 'assets/ship.png',
+    class: 'ship'
+  },
+  {
+    x: 1800,
+    y: 670,
+    isHidden: true,
+    forceHide: true,
+    assetURL: 'assets/ship.png',
+    class: 'ship'
+  },
+  {
+    x: 1780,
+    y: 1050,
+    isHidden: true,
+    forceHide: true,
+    assetURL: 'assets/ship.png',
+    class: 'ship'
+  },
+  {
+    x: 1000, // NB: used below in generateRandomArea
+    y: 740,
+    isHidden: true,
+    assetURL: 'assets/lake.png',
+    width: 462,
+    height: 148,
+    id: 'lake'
   }
 ];
 
@@ -615,8 +708,13 @@ function getRandomInt(min, max) { // inclusive
   for (let i = 0; i < 100; i++) {
     const x = getRandomInt(0, 1500);
     const y = getRandomInt(650, 1300);
-    // do not populate the tower area
-    if (Math.abs(x-950) > 50 && Math.abs(y-950) > 50) {
+    // do not populate the tower and lake areas
+    if (
+      ! (
+        (Math.abs(x-950) < 50 || Math.abs(y-950) < 50) || // near tower
+        (y>680 && y<815 && x>775 && x<1230) // near lake
+      )
+    ) {
       game.state.objects.push({
         x: x,
         y: y,
