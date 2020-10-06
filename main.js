@@ -449,6 +449,12 @@ function draw(timestamp) {
         }
       } else if (obj.isFadingOut) {
         obj.fadeCounter++;
+
+        // special exemption for shoreline to keep half-faded footsteps
+        if (obj.x > 1520 && obj.fadeCounter > (FADE_OUT_DELAY+FADE_OUT_DURATION)/2) {
+          obj.fadeCounter--;
+        }
+
         if (obj.fadeCounter > FADE_OUT_DELAY) {
           let newAlpha = 1 - (obj.fadeCounter - FADE_OUT_DELAY) / FADE_OUT_DURATION;
           // with the delay, we might get out of semantic range - easiest to just clip
