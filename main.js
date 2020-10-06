@@ -204,6 +204,14 @@ function processCompletedTask() {
   }
 
   // cycle to next task with a timeout
+
+  game.state.hasTask = false; // startTask will set it to true, see timeout below
+
+  if (currentTask.blocksAutoContinue) {
+    // should be used sparingly - make sure that these tasks process a choice
+    return;
+  }
+
   if (game.state.currentTaskIndex === game.tasks.length -1) {
     console.log('---no more tasks---');
   } else {
@@ -212,22 +220,30 @@ function processCompletedTask() {
     setTimeout(startTask, 1000);
   }
 
-  game.state.hasTask = false; // startTask will set it to true, see timeout above
 }
 
 function processChoice() {
   game.state.choices--;
   hideChoiceMarker();
   game.state.hasTask = false;
-  writeMessage('But he decided to do something different.');
-  game.meta.stage++;
-
-  game.state.currentTaskIndex = game.state.currentTaskIndex + 1;
-  setTimeout(startTask, 500);
+  if (game.meta.stage === 1) {
+    writeMessage('But he decided to do something different.');
+    game.meta.stage++;
+    game.state.currentTaskIndex = game.state.currentTaskIndex + 1;
+    setTimeout(startTask, 500);
+  } else if (game.meta.stage === 2) {
+    writeMessage('No, I... misremembered. That day he felt brave.');
+    // in stage 2, there's no task to open the map bounds
+    game.state.mapBounds = STAGE_BOUNDS[2];
+    game.meta.stage++;
+    game.state.currentTaskIndex = game.state.currentTaskIndex + 1;
+    setTimeout(startTask, 5000);
+  }
 }
 
 function resetInitialState() {
   game.meta.resets++;
+  game.meta.stage = 1;
   game.state = clone(game._initialState);
   // clone does not carry the HTMLImageElements, so we re-add them
   // (assetURL2ImageCache persists, so this should not be expensive)
@@ -472,23 +488,25 @@ function draw(timestamp) {
 function startDay() {
   writeDelayedMessage('It was a day just like any other.', 1000);
 
-  // DEBUG mode: do not start task to allow free roaming
+  const DEBUG_MODE = true;
 
-  setTimeout(
-    function() {
-      // TODO: only start task after msg is fully shown
-      startTask();
-    },
-    5000
-  );
-
-  // debug: freeroam
-  setTimeout(
-    function() {
-      // TODO remove debug freeroam
-      //game.state.mapBounds = {x: 1600, y: 600};
-    },
-    500
-  );
+  if (DEBUG_MODE) {
+    // free-roam
+    setTimeout(
+      function() {
+        game.state.mapBounds = STAGE_BOUNDS[2];
+      },
+      200
+    );
+  } else {
+    // start game tasks
+    setTimeout(
+      function() {
+        // TODO: only start task after msg is fully shown
+        startTask();
+      },
+      5000
+    );
+  }
 
 }

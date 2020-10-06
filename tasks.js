@@ -312,11 +312,15 @@
     },
     {
       id: 'stage-2-stay-at-bridge',
+      endEffect: function(gameState) {
+        gameState.choices++;
+      },
       startEffect: function(gameState) {
         const targets = gameState.objects.filter((obj) => obj.class==='river-scenery');
         targets.forEach(game.utils.fadeInObject);
       },
       startMessage: 'From the bridge, he took a long look at the riverside.',
+      endMessage: 'The view inspired him to explore.',
       setData: function(player, gameState) {
         currentTask = {
           startPosition: {
@@ -356,6 +360,74 @@
 
         taskState.completed = gameState.lastDrawTime - currentTask.startTime > 6000;
 
+        return taskState;
+      }
+    },
+    {
+      id: 'stage-2-finale-trigger',
+      setData: function() {
+        // dummy // TODO make optional
+      },
+      checker: function(player, gameState) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        // triggered in bottom left corner outside of stage1
+        taskState.completed = player.x < 700 && player.y > 500;
+
+        return taskState;
+      }
+    },
+    {
+      id: 'stage-2-end-choice',
+      startMessage: 'The wolves in the south scared him, so he headed straight home.',
+      blocksAutoContinue: true,
+      endEffect: function(gameState) {
+        if (game.meta.resets > 20) {
+          resetGame('He wished he had dared the wolves.');
+        } else {
+          resetGame('He felt like he was missing out on something.');
+        }
+      },
+      setData: function(player, gameState) {
+        const target = game.utils.findObjectByID('home', gameState.objects);
+        currentTask = {
+          target: {
+            x: target.x,
+            y: target.y
+          },
+          startPosition: {
+            x: player.x,
+            y: player.y
+          }
+        };
+      },
+      checker: function(player, gameState) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        taskState.completed = game.utils.isObjectInProximity(player, currentTask.target);
+
+        taskState.failed = player.x < 250 && player.y > 500;
+
+        return taskState;
+      }
+    },
+    {
+      id: 'stage-3-opener',
+      startMessage: 'Heading south, he saw parts of the forest he\'d never seen before',
+      setData: function() {
+        // dummy // TODO make optional
+      },
+      checker: function(player, gameState) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
         return taskState;
       }
     },

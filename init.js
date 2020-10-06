@@ -27,7 +27,7 @@ const game = {
   },
   meta: {
     resets: 0,
-    stage: 1
+    stage: 1 // TODO: switch to 0-based, it's confusing...
   }
 };
 
@@ -235,6 +235,13 @@ game.state.objects = [
     class: 'river-scenery'
   },
   {
+    x: 1060,
+    y: 640,
+    isHidden: true,
+    assetURL: 'assets/river-bendy.png',
+    class: 'river-scenery'
+  },
+  {
     x: 1020,
     y: 460,
     isHidden: true,
@@ -304,6 +311,106 @@ game.state.objects = [
     assetURL: 'assets/tree3.png',
     class: 'river-scenery'
   },
+  {
+    x: 1200,
+    y: 330,
+    isHidden: true,
+    assetURL: 'assets/tree3.png'
+  },
+  {
+    x: 1320,
+    y: 560,
+    isHidden: true,
+    assetURL: 'assets/tree1.png'
+  },
+  {
+    x: 1400,
+    y: 210,
+    isHidden: true,
+    assetURL: 'assets/tree3.png'
+  },
+  {
+    x: 1320,
+    y: 60,
+    isHidden: true,
+    assetURL: 'assets/tree2.png'
+  },
+  {
+    x: 1300,
+    y: 110,
+    isHidden: true,
+    assetURL: 'assets/tree2.png'
+  },
+  // dark forest patch - end of stage 2
+  {
+    x: 150,
+    y: 510,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png'
+  },
+  {
+    x: 250,
+    y: 570,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png'
+  },
+  {
+    x: 0,
+    y: 580,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png'
+  },
+  {
+    x: 380,
+    y: 600,
+    isHidden: true,
+    assetURL: 'assets/tree2.png'
+  },
+  {
+    x: 430,
+    y: 620,
+    isHidden: true,
+    assetURL: 'assets/tree2.png'
+  },
+  {
+    x: 400,
+    y: 610,
+    isHidden: true,
+    assetURL: 'assets/tree2.png'
+  },
+  {
+    x: 200,
+    y: 630,
+    isHidden: true,
+    assetURL: 'assets/tree2.png'
+  },
+  {
+    x: 270,
+    y: 580,
+    isHidden: true,
+    assetURL: 'assets/tree1.png'
+  },
+  {
+    x: 100,
+    y: 610,
+    isHidden: true,
+    assetURL: 'assets/tree1.png'
+  },
+  {
+    x: 140,
+    y: 620,
+    isHidden: true,
+    assetURL: 'assets/tree1.png'
+  },
+  {
+    x: 550,
+    y: 600,
+    isHidden: true,
+    assetURL: 'assets/tree-group.png'
+  },
+
+  //          -------      STAGE 3      -------
+  // western part is randomly generated
 ];
 
 // DEBUG: generate gridmarks
