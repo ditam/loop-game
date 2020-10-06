@@ -375,7 +375,10 @@
         };
 
         // triggered in bottom left corner outside of stage1
-        taskState.completed = player.x < 700 && player.y > 500;
+        taskState.completed = (
+          (player.x < 700 && player.y > 500) || // either arriving from the east
+          (player.x < 450 && player.y > 400) // or from the top
+        );
 
         return taskState;
       }
