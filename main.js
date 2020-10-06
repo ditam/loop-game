@@ -328,48 +328,62 @@ function draw(timestamp) {
   let hasMoved = false;
   const movementAngles = [];
 
-  // move player according to current pressed keys
-  // TODO: separate drawing and simulation
-  if (keysPressed.up) {
-    player.y = Math.max(0, player.y - PLAYER_SPEED);
-    playerInViewport.y = player.y - viewport.y;
-    if (playerInViewport.y <= MAP_SCROLL_PADDING) { // TODO: use padding+speed in bounds check?
-      viewport.y = Math.max(0, viewport.y - PLAYER_SPEED);
+
+  // adjust viewport when forced scrolling - blocks manual movement
+  if (game.state.forcedScrolling) {
+    // NB: be careful when scrolling more than MAP_SCROLL_PADDING, you can push the player out of the viewport
+    if (game.state.forcedScrollCount < 500 && viewport.x + WIDTH < mapBounds.x) {
+      game.state.forcedScrollCount++;
+      viewport.x++;
+    } else {
+      game.state.forcedScrolling = false;
+      game.state.forcedScrollCount = 0;
+    }
+  } else {
+    // move player according to current pressed keys
+    // TODO: separate drawing and simulation
+    if (keysPressed.up) {
+      player.y = Math.max(0, player.y - PLAYER_SPEED);
       playerInViewport.y = player.y - viewport.y;
+      if (playerInViewport.y <= MAP_SCROLL_PADDING) { // TODO: use padding+speed in bounds check?
+        viewport.y = Math.max(0, viewport.y - PLAYER_SPEED);
+        playerInViewport.y = player.y - viewport.y;
+      }
+      hasMoved = true;
+      movementAngles.push(0);
     }
-    hasMoved = true;
-    movementAngles.push(0);
-  }
-  if (keysPressed.right) {
-    player.x = Math.min(mapBounds.x, player.x + PLAYER_SPEED);
-    playerInViewport.x = player.x - viewport.x;
-    if (playerInViewport.x >= WIDTH - MAP_SCROLL_PADDING) {
-      viewport.x = Math.min(mapBounds.x - WIDTH, viewport.x + PLAYER_SPEED);
+    if (keysPressed.right) {
+      player.x = Math.min(mapBounds.x, player.x + PLAYER_SPEED);
       playerInViewport.x = player.x - viewport.x;
+      if (playerInViewport.x >= WIDTH - MAP_SCROLL_PADDING) {
+        viewport.x = Math.min(mapBounds.x - WIDTH, viewport.x + PLAYER_SPEED);
+        playerInViewport.x = player.x - viewport.x;
+      }
+      hasMoved = true;
+      movementAngles.push(90 * Math.PI / 180);
     }
-    hasMoved = true;
-    movementAngles.push(90 * Math.PI / 180);
-  }
-  if (keysPressed.down) {
-    player.y = Math.min(mapBounds.y, player.y + PLAYER_SPEED);
-    playerInViewport.y = player.y - viewport.y;
-    if (playerInViewport.y >= HEIGHT- MAP_SCROLL_PADDING) {
-      viewport.y = Math.min(mapBounds.y - HEIGHT, viewport.y + PLAYER_SPEED);
+    if (keysPressed.down) {
+      player.y = Math.min(mapBounds.y, player.y + PLAYER_SPEED);
       playerInViewport.y = player.y - viewport.y;
+      if (playerInViewport.y >= HEIGHT- MAP_SCROLL_PADDING) {
+        viewport.y = Math.min(mapBounds.y - HEIGHT, viewport.y + PLAYER_SPEED);
+        playerInViewport.y = player.y - viewport.y;
+      }
+      hasMoved = true;
+      movementAngles.push(180 * Math.PI / 180);
     }
-    hasMoved = true;
-    movementAngles.push(180 * Math.PI / 180);
-  }
-  if (keysPressed.left) {
-    player.x = Math.max(0, player.x - PLAYER_SPEED);
-    playerInViewport.x = player.x - viewport.x;
-    if (playerInViewport.x <= MAP_SCROLL_PADDING) {
-      viewport.x = Math.max(0, viewport.x - PLAYER_SPEED);
+    if (keysPressed.left) {
+      player.x = Math.max(0, player.x - PLAYER_SPEED);
       playerInViewport.x = player.x - viewport.x;
+      if (playerInViewport.x <= MAP_SCROLL_PADDING) {
+        viewport.x = Math.max(0, viewport.x - PLAYER_SPEED);
+        playerInViewport.x = player.x - viewport.x;
+      }
+      hasMoved = true;
+      movementAngles.push(270 * Math.PI / 180);
     }
-    hasMoved = true;
-    movementAngles.push(270 * Math.PI / 180);
   }
+
 
   // add footstep every once in a while
   if (hasMoved && !(drawCount%FOOTSTEP_FREQUENCY)) {
@@ -381,18 +395,6 @@ function draw(timestamp) {
 
     addFootstep(player.x, player.y, angle);
     game.utils.discoverObjectsInRange(player.x, player.y, game.state.objects);
-  }
-
-  // adjust viewport when forced scrolling
-  if (game.state.forcedScrolling) {
-    // NB: be careful when scrolling more than MAP_SCROLL_PADDING, you can push the player out of the viewport
-    if (game.state.forcedScrollCount < 250 && viewport.x + WIDTH < mapBounds.x) {
-      game.state.forcedScrollCount++;
-      viewport.x++;
-    } else {
-      game.state.forcedScrolling = false;
-      game.state.forcedScrollCount = 0;
-    }
   }
 
   // check if movement satisfies current task
@@ -488,13 +490,16 @@ function draw(timestamp) {
 function startDay() {
   writeDelayedMessage('It was a day just like any other.', 1000);
 
-  const DEBUG_MODE = true;
+  const DEBUG_MODE = false;
 
   if (DEBUG_MODE) {
     // free-roam
     setTimeout(
       function() {
         game.state.mapBounds = STAGE_BOUNDS[2];
+        game.state.currentTaskIndex = game.utils.getTaskIndexFromID('stage-3-tower');
+        console.log('Jumping to task: #', game.state.currentTaskIndex);
+        startTask();
       },
       200
     );

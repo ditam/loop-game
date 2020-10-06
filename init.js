@@ -411,11 +411,71 @@ game.state.objects = [
 
   //          -------      STAGE 3      -------
   // western part is randomly generated
+
+  {
+    x: 950, // NB: also used in generateRandomArea below!
+    y: 950,
+    isHidden: true,
+    assetURL: 'assets/watchtower.png',
+    width: 120,
+    height: 138,
+    id: 'tower'
+  },
+  {
+    x: 850,
+    y: 850,
+    isHidden: true,
+    assetURL: 'assets/flag.png',
+  },
+  {
+    x: 1050,
+    y: 850,
+    isHidden: true,
+    assetURL: 'assets/flag.png',
+  },
+  {
+    x: 1050,
+    y: 1050,
+    isHidden: true,
+    assetURL: 'assets/flag.png',
+  },
+  {
+    x: 850,
+    y: 1050,
+    isHidden: true,
+    assetURL: 'assets/flag.png',
+  }
 ];
+
+function getRandomItem(array) {
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
+}
+
+function getRandomInt(min, max) { // inclusive
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+(function generateRandomArea() {
+  const assetChoices = ['tree1', 'tree2', 'tree3', 'tree-group', 'rocks', 'rocksA'];
+  for (let i = 0; i < 100; i++) {
+    const x = getRandomInt(0, 1500);
+    const y = getRandomInt(650, 1300);
+    // do not populate the tower area
+    if (Math.abs(x-950) > 50 && Math.abs(y-950) > 50) {
+      game.state.objects.push({
+        x: x,
+        y: y,
+        isHidden: true,
+        assetURL: `assets/${getRandomItem(assetChoices)}.png`
+      });
+    }
+  }
+})();
 
 // DEBUG: generate gridmarks
 // for (let i=0; i<25; i++) {
-//   for (let j=0; j<10; j++) {
+//   for (let j=0; j<15; j++) {
 //     game.state.objects.push({
 //       x: i*100,
 //       y: j*100

@@ -45,6 +45,16 @@ game.utils = {
     obj.fadeCounter = 0;
   },
 
+  getTaskIndexFromID: function(taskID) {
+    let taskIndex;
+    game.tasks.forEach(function(task, i) {
+      if (task.id === taskID) {
+        taskIndex = i;
+      }
+    });
+    return taskIndex;
+  },
+
   swapObjects: function(idA, idB) {
     const objA = game.utils.findObjectByID(idA, game.state.objects);
     game.utils.fadeOutObject(objA);
@@ -52,12 +62,13 @@ game.utils = {
     game.utils.fadeInObject(objB);
   },
 
-  isObjectInProximity: function(playerCoords, objectCoords) {
+  isObjectInProximity: function(playerCoords, objectCoords, largeObject) {
     const xDist = Math.abs(playerCoords.x - objectCoords.x);
     const yDist = Math.abs(playerCoords.y - objectCoords.y);
 
     const distSquared = xDist*xDist + yDist*yDist;
-    return distSquared < ACTIVITY_RADIUS*ACTIVITY_RADIUS;
+    const radius = largeObject? ACTIVITY_RADIUS*2 : ACTIVITY_RADIUS;
+    return distSquared < radius*radius;
   },
 
   findObjectByID: function(id, objects) {

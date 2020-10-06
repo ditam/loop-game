@@ -132,7 +132,7 @@
     },
     {
       id: 'stay-at-fire',
-      startMessage: 'And he just stood there for a while.',
+      startMessage: 'And he just stood there for a while to warm up.',
       setData: function(player, gameState) {
         currentTask = {
           startPosition: {
@@ -420,6 +420,12 @@
     {
       id: 'stage-3-opener',
       startMessage: 'Heading south, he saw parts of the forest he\'d never seen before',
+      endEffect: function(gameState) {
+        const target = game.utils.findObjectByID('tower', gameState.objects);
+        game.utils.fadeInObject(target);
+        game.state.forcedScrolling = true;
+        game.state.forcedScrollCount = 0;
+      },
       setData: function() {
         // dummy // TODO make optional
       },
@@ -428,6 +434,65 @@
           completed: false,
           failed: false
         };
+        // Failed if goes back to stage 1, completed if crosses random area's east edge
+        taskState.failed = (
+          player.y < 500 ||
+          // also if they start east in the stage 2 corridor
+          (player.y < 650 && player.x > 400)
+        );
+
+        taskState.completed = player.x > 700;
+
+
+        return taskState;
+      }
+    },
+    {
+      id: 'stage-3-tower',
+      startMessage: 'He noticed the tower, and decided to climb it.',
+      endEffect: function(gameState) {
+        const targets = gameState.objects.filter((obj) => obj.y > 600 && obj.x < 1600);
+        setTimeout(function() {
+          targets.forEach(game.utils.fadeInObject);
+        }, 2000);
+        game.state.forcedScrolling = true;
+        game.state.forcedScrollCount = 0;
+      },
+      setData: function(player, gameState) {
+        const target = game.utils.findObjectByID('tower', gameState.objects);
+        currentTask = {
+          target: {
+            x: target.x,
+            y: target.y
+          },
+          startPosition: {
+            x: player.x,
+            y: player.y
+          }
+        };
+        currentTask.acceptableBounds = {
+          x0: Math.min(currentTask.target.x, currentTask.startPosition.x) - 100,
+          y0: Math.min(currentTask.target.y, currentTask.startPosition.y) - 100,
+          x1: Math.max(currentTask.target.x, currentTask.startPosition.x) + 100,
+          y1: Math.max(currentTask.target.y, currentTask.startPosition.y) + 100
+        }
+      },
+      checker: function(player) {
+        const taskState = {
+          completed: false,
+          failed: false
+        };
+
+        const bounds = currentTask.acceptableBounds;
+        if (
+          player.x < bounds.x0 || player.y < bounds.y0 ||
+          player.x > bounds.x1 || player.y > bounds.y1
+        ) {
+          taskState.failed = true;
+        }
+
+        taskState.completed = game.utils.isObjectInProximity(player, currentTask.target, true);
+
         return taskState;
       }
     },
