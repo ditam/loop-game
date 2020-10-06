@@ -4,6 +4,8 @@ const game = {
   state: {
     choices: 0,
     currentTaskIndex: 0,
+    forcedScrolling: false,
+    forcedScrollCount: 0,
     hasTask: false,
     lastDrawTime: 0,
     mapBounds: {

@@ -365,6 +365,18 @@ function draw(timestamp) {
     game.utils.discoverObjectsInRange(player.x, player.y, game.state.objects);
   }
 
+  // adjust viewport when forced scrolling
+  if (game.state.forcedScrolling) {
+    // NB: be careful when scrolling more than MAP_SCROLL_PADDING, you can push the player out of the viewport
+    if (game.state.forcedScrollCount < 250 && viewport.x + WIDTH < mapBounds.x) {
+      game.state.forcedScrollCount++;
+      viewport.x++;
+    } else {
+      game.state.forcedScrolling = false;
+      game.state.forcedScrollCount = 0;
+    }
+  }
+
   // check if movement satisfies current task
   if (game.state.hasTask) {
     const taskState = checkCoordsForCurrentTask({x: player.x, y: player.y});

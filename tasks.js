@@ -245,7 +245,7 @@
           failed: false
         };
 
-        taskState.completed = playerCoords.x > 900 && playerCoords.y < 270;
+        taskState.completed = playerCoords.x > 850 && playerCoords.y < 270;
 
         return taskState;
       }
@@ -255,6 +255,8 @@
       startEffect: function(gameState) {
         const target = game.utils.findObjectByID('bridge', gameState.objects);
         game.utils.fadeInObject(target);
+        game.state.forcedScrolling = true;
+        game.state.forcedScrollCount = 0;
       },
       startMessage: 'He was happy to see the old bridge, and headed straight for it.',
       setData: function(player, gameState) {
