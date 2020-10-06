@@ -214,6 +214,7 @@ function processCompletedTask() {
 }
 
 function processChoice() {
+  game.state.choices--;
   hideChoiceMarker();
   game.state.hasTask = false;
   writeMessage('But he decided to do something different.');
