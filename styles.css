@@ -1,6 +1,7 @@
 body {
   background-color: #eee;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 canvas {
