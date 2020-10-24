@@ -107,6 +107,7 @@
       },
       endEffect: function(gameState) {
         game.utils.swapObjects('fire-out', 'fire');
+        game.state.forcedWaiting = true;
       },
       setData: function(player, gameState) {
         const target = game.utils.findObjectByID('fire', gameState.objects);
@@ -133,14 +134,20 @@
     {
       id: 'stay-at-fire',
       startMessage: 'And he just stood there for a while to warm up.',
+      startEffect: function(gameState) {
+        const waitTimeout = this.startMessage.length * MESSAGE_CHAR_DELAY;
+        setTimeout(function() {
+          game.state.forcedWaiting = false;
+        }, waitTimeout + 200);
+      },
       setData: function(player, gameState) {
         currentTask = {
           startPosition: {
             x: player.x,
             y: player.y
           },
-          startTime: gameState.lastDrawTime,
-          inGracePeriod: true
+          target: game.utils.findObjectByID('fire', gameState.objects),
+          startTime: gameState.lastDrawTime
         };
       },
       checker: function(player, gameState) {
@@ -149,27 +156,10 @@
           failed: false
         };
 
-        if (gameState.lastDrawTime - currentTask.startTime > (this.startMessage.length * MESSAGE_CHAR_DELAY)+300) {
-          currentTask.inGracePeriod = false;
-          currentTask.startPosition = {
-            x: player.x,
-            y: player.y
-          };
-        }
-
-        if (currentTask.inGracePeriod) {
-          return taskState;
-        }
-
-        const bounds = currentTask.acceptableBounds;
-        if (
-          player.x !== currentTask.startPosition.x ||
-          player.y !== currentTask.startPosition.y
-        ) {
-          if (gameState.lastDrawTime - currentTask.startTime > gracePeriod) {
-            taskState.failed = true;
-          }
-        }
+        taskState.failed = !(
+          game.utils.isObjectInProximity(player, currentTask.target) ||
+          game.utils.isObjectInProximity(player, currentTask.startPosition)
+        );
 
         taskState.completed = gameState.lastDrawTime - currentTask.startTime > 5000;
 
@@ -272,6 +262,9 @@
         game.state.forcedScrollCount = 0;
       },
       startMessage: 'He was happy to see the old bridge, and headed straight for it.',
+      endEffect: function() {
+        game.state.forcedWaiting = true;
+      },
       setData: function(player, gameState) {
         const target = game.utils.findObjectByID('bridge', gameState.objects);
         currentTask = {
@@ -312,21 +305,26 @@
     },
     {
       id: 'stage-2-stay-at-bridge',
+      startMessage: 'From the bridge, he took a long look at the riverside.',
+      startEffect: function(gameState) {
+        const targets = gameState.objects.filter((obj) => obj.class==='river-scenery');
+        const waitTimeout = this.startMessage.length * MESSAGE_CHAR_DELAY;
+        setTimeout(function() {
+          targets.forEach(game.utils.fadeInObject);
+          game.state.forcedWaiting = false;
+        }, waitTimeout + 200);
+      },
+      endMessage: 'The view inspired him to explore.',
       endEffect: function(gameState) {
         gameState.choices++;
       },
-      startEffect: function(gameState) {
-        const targets = gameState.objects.filter((obj) => obj.class==='river-scenery');
-        targets.forEach(game.utils.fadeInObject);
-      },
-      startMessage: 'From the bridge, he took a long look at the riverside.',
-      endMessage: 'The view inspired him to explore.',
       setData: function(player, gameState) {
         currentTask = {
           startPosition: {
             x: player.x,
             y: player.y
           },
+          target: game.utils.findObjectByID('bridge', gameState.objects),
           startTime: gameState.lastDrawTime
         };
       },
@@ -336,27 +334,10 @@
           failed: false
         };
 
-        if (gameState.lastDrawTime - currentTask.startTime > (this.startMessage.length * MESSAGE_CHAR_DELAY)+300) {
-          currentTask.inGracePeriod = false;
-          currentTask.startPosition = {
-            x: player.x,
-            y: player.y
-          };
-        }
-
-        if (currentTask.inGracePeriod) {
-          return taskState;
-        }
-
-        const bounds = currentTask.acceptableBounds;
-        if (
-          player.x !== currentTask.startPosition.x ||
-          player.y !== currentTask.startPosition.y
-        ) {
-          if (gameState.lastDrawTime - currentTask.startTime > 300) {
-            taskState.failed = true;
-          }
-        }
+        taskState.failed = !(
+          game.utils.isObjectInProximity(player, currentTask.target) ||
+          game.utils.isObjectInProximity(player, currentTask.startPosition)
+        );
 
         taskState.completed = gameState.lastDrawTime - currentTask.startTime > 6000;
 

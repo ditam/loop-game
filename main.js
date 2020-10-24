@@ -328,6 +328,7 @@ function draw(timestamp) {
   let hasMoved = false;
   const movementAngles = [];
 
+  // TODO: separate drawing and simulation
 
   // adjust viewport when forced scrolling - blocks manual movement
   if (game.state.forcedScrolling) {
@@ -339,9 +340,8 @@ function draw(timestamp) {
       game.state.forcedScrolling = false;
       game.state.forcedScrollCount = 0;
     }
-  } else {
+  } else if (!game.state.forcedWaiting) {
     // move player according to current pressed keys
-    // TODO: separate drawing and simulation
     if (keysPressed.up) {
       player.y = Math.max(0, player.y - PLAYER_SPEED);
       playerInViewport.y = player.y - viewport.y;
@@ -508,7 +508,7 @@ function startDay() {
       function() {
         game.state.mapBounds = STAGE_BOUNDS[2];
         // jump to any task with an id
-        game.state.currentTaskIndex = game.utils.getTaskIndexFromID('stage-3-free-roam');
+        game.state.currentTaskIndex = game.utils.getTaskIndexFromID('free-roam-to-fire');
         console.log('Jumping to task: #', game.state.currentTaskIndex);
         startTask();
       },
