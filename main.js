@@ -191,7 +191,11 @@ function processCompletedTask() {
   if (currentTask.endMessage) {
     writeMessage(currentTask.endMessage);
   } else {
-    writeMessage('');
+    // bugfix: the final task uses a special message setup, so we skip the clearing
+    // (we call this method to call the task's endEffect for good measure, but this could be cleaned up...)
+    if (currentTask.id !== 'stage-3-free-roam') {
+      writeMessage('');
+    }
   }
 
   // apply task effects
@@ -508,7 +512,7 @@ function startDay() {
       function() {
         game.state.mapBounds = STAGE_BOUNDS[2];
         // jump to any task with an id
-        game.state.currentTaskIndex = game.utils.getTaskIndexFromID('free-roam-to-fire');
+        game.state.currentTaskIndex = game.utils.getTaskIndexFromID('stage-3-free-roam');
         console.log('Jumping to task: #', game.state.currentTaskIndex);
         startTask();
       },

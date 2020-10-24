@@ -486,7 +486,7 @@
       endEffect: function(gameState) {
         setTimeout(function() {
           resetGame('I\'ve told you this story before.');
-        }, 17000);
+        }, 15000);
       },
       setData: function(player, gameState) {
         currentTask = {
@@ -496,7 +496,8 @@
           visitedBottomCorner: false,
           visitedTopCorner: false,
           pickedUpChest: false,
-          lighthouse: game.utils.findObjectByID('lighthouse', gameState.objects)
+          lighthouse: game.utils.findObjectByID('lighthouse', gameState.objects),
+          msgTimeout: null
         };
       },
       checker: function(player, gameState) {
@@ -517,19 +518,28 @@
         if (!currentTask.visitedLake && y>680 && y<815 && x>775 && x<1230) {
           currentTask.visitedLake = true;
           writeMessage('He visited the lake, but he had no interest in fishing.');
-          writeDelayedMessage('', 7000);
+          if (currentTask.msgTimeout) {
+            clearTimeout(currentTask.msgTimeout);
+          }
+          currentTask.msgTimeout = writeDelayedMessage('', 7000);
         }
         if (!currentTask.visitedBeach && x>1520) {
           currentTask.visitedBeach = true;
           writeMessage('The sand of the beach held his footsteps forever.');
-          writeDelayedMessage('', 7000);
+          if (currentTask.msgTimeout) {
+            clearTimeout(currentTask.msgTimeout);
+          }
+          currentTask.msgTimeout = writeDelayedMessage('', 7000);
         }
         if (!currentTask.visitedLighthouse && game.utils.isObjectInProximity(player, currentTask.lighthouse)) {
           currentTask.visitedLighthouse = true;
           const ships = gameState.objects.filter((obj) => obj.class==='ship');
           ships.forEach(game.utils.fadeInObject);
           writeMessage('From the lighthouse, he could see ships leaving the shore.');
-          writeDelayedMessage('', 7000);
+          if (currentTask.msgTimeout) {
+            clearTimeout(currentTask.msgTimeout);
+          }
+          currentTask.msgTimeout = writeDelayedMessage('', 7000);
           currentTask.chest = {
             isHidden: true,
             assetURL: 'assets/chest.png',
@@ -547,6 +557,16 @@
         }
         if (currentTask.chest && game.utils.isObjectInProximity(player, currentTask.chest)) {
           currentTask.pickedUpChest = true;
+
+          // mark all other flags to avoid weird bugs - the game is ending anyway
+          currentTask.visitedLake = true;
+          currentTask.visitedBeach = true;
+          currentTask.visitedLighthouse = true;
+          clearTimeout(currentTask.msgTimeout);
+
+          // block movement to suggest the game is ending (I guess)
+          game.state.forcedWaiting = true;
+
           writeMessage('He came across a chest in the sands.');
           writeDelayedMessage('What was in the chest, is a story for an other day...', 6000);
           writeDelayedMessage('', 12000);
