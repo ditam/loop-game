@@ -84,7 +84,7 @@ function writeMessage(msg) {
 
 function writeDelayedMessage(msg, delay) {
   // TODO: guard against scheduling on top of existing. Shared timeout vars?
-  setTimeout(
+  return setTimeout(
     () => writeMessage(msg),
     delay
   );
